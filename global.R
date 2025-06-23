@@ -52,4 +52,6 @@ long_pna <- setNames(pna_values$long_value, pna_values$short_name)
 
 
 # IgG Model ---------------------------------------------------------------
-igg_model <- readRDS("data/fit_igg_model.rds")
+#igg_model <- readRDS("data/fit_igg_model.rds")
+posterior_draws <- readRDS("data/igg_model_draws.rds")
+

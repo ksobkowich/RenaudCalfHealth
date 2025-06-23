@@ -806,8 +806,8 @@ function(input, output, session) {
   
   ## Formula for Predicting Day 1 IgG ---------------------------------------
   
-  calculate_day_1_igg <- function(fit, IgG_obs, Day_obs) {
-    posterior_draws <- posterior::as_draws_df(fit)
+  calculate_day_1_igg <- function(IgG_obs, Day_obs) {
+    #posterior_draws <- posterior::as_draws_df(fit)
     
     beta_intercept <- posterior_draws$b_Intercept
     beta_day       <- posterior_draws$b_Day
@@ -854,7 +854,6 @@ function(input, output, session) {
     } else {
       
       x <- calculate_day_1_igg(
-        fit = igg_model,
         IgG_obs = input$single_igg_value,
         Day_obs = input$single_igg_day
       )
@@ -1031,12 +1030,10 @@ function(input, output, session) {
     withProgress(message = 'Calculating IgG Values...', value = 0, {
     
     df <- batch_igg_data()
-    fit <- igg_model
     
     df_pred <- df %>%
       rowwise() %>%
       mutate(pred = list(calculate_day_1_igg(
-        fit = fit,
         IgG_obs = cur_data()[[input$batch_igg_value_column]],
         Day_obs = cur_data()[[input$batch_igg_day_column]]
       ))) %>%
