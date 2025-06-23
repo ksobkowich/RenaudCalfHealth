@@ -129,6 +129,37 @@
         "Built": "R 4.3.1; aarch64-apple-darwin20; 2023-06-16 21:53:35 UTC; unix"
       }
     },
+    "QuickJSR": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com/",
+      "description": {
+        "Package": "QuickJSR",
+        "Title": "Interface for the 'QuickJS' Lightweight 'JavaScript' Engine",
+        "Version": "1.1.3",
+        "Authors@R": "c(\n  person(given = c(\"Andrew\", \"R.\"), family = \"Johnson\", role = c(\"aut\", \"cre\"),\n          email = \"andrew.johnson@arjohnsonau.com\",\n          comment = c(ORCID = \"0000-0001-7000-8065\")),\n  person(given = \"Fabrice\", family = \"Bellard\", role = c(\"ctb\", \"cph\"),\n          comment = \"Author of QuickJS sources and headers\"),\n  person(given = \"Charlie\", family = \"Gordon\", role = c(\"ctb\", \"cph\"),\n          comment = \"Author of QuickJS sources and headers\")\n  )",
+        "Description": "An 'R' interface to the 'QuickJS' portable 'JavaScript' engine.\n    The engine is bundled entirely within the package, requiring no external system\n    dependencies beyond a 'C' compiler.",
+        "License": "MIT + file LICENSE",
+        "Encoding": "UTF-8",
+        "RoxygenNote": "7.3.1",
+        "NeedsCompilation": "yes",
+        "SystemRequirements": "GNU make",
+        "Imports": "jsonlite, R6, Rcpp",
+        "LinkingTo": "Rcpp",
+        "URL": "https://github.com/andrjohns/QuickJSR,\nhttps://bellard.org/quickjs/",
+        "BugReports": "https://github.com/andrjohns/QuickJSR/issues",
+        "Suggests": "testthat (>= 3.0.0)",
+        "Config/testthat/edition": "3",
+        "Config/testthat/parallel": "true",
+        "Language": "en-GB",
+        "Packaged": "2024-01-31 09:52:16 UTC; andrew",
+        "Author": "Andrew R. Johnson [aut, cre] (<https://orcid.org/0000-0001-7000-8065>),\n  Fabrice Bellard [ctb, cph] (Author of QuickJS sources and headers),\n  Charlie Gordon [ctb, cph] (Author of QuickJS sources and headers)",
+        "Maintainer": "Andrew R. Johnson <andrew.johnson@arjohnsonau.com>",
+        "Repository": "CRAN",
+        "Date/Publication": "2024-01-31 12:50:02 UTC",
+        "Built": "R 4.3.1; aarch64-apple-darwin20; 2024-01-31 13:29:00 UTC; unix",
+        "Archs": "QuickJSR.so.dSYM"
+      }
+    },
     "R6": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com/",
@@ -198,6 +229,91 @@
         "Date/Publication": "2023-01-22 16:30:02 UTC",
         "Built": "R 4.3.0; aarch64-apple-darwin20; 2023-04-11 04:31:11 UTC; unix",
         "Archs": "Rcpp.so.dSYM"
+      }
+    },
+    "RcppEigen": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com/",
+      "description": {
+        "Package": "RcppEigen",
+        "Type": "Package",
+        "Title": "'Rcpp' Integration for the 'Eigen' Templated Linear Algebra\nLibrary",
+        "Version": "0.3.4.0.0",
+        "Date": "2024-02-28",
+        "Author": "Douglas Bates, Dirk Eddelbuettel, Romain Francois, and Yixuan Qiu;\n the authors of Eigen for the included version of Eigen",
+        "Maintainer": "Dirk Eddelbuettel <edd@debian.org>",
+        "Copyright": "See the file COPYRIGHTS for various Eigen copyright details",
+        "Description": "R and 'Eigen' integration using 'Rcpp'.\n 'Eigen' is a C++ template library for linear algebra: matrices, vectors,\n numerical solvers and related algorithms.  It supports dense and sparse\n matrices on integer, floating point and complex numbers, decompositions of\n such matrices, and solutions of linear systems. Its performance on many\n algorithms is comparable with some of the best implementations based on\n 'Lapack' and level-3 'BLAS'. The 'RcppEigen' package includes the header\n files from the 'Eigen' C++ template library. Thus users do not need to\n install 'Eigen' itself in order to use 'RcppEigen'. Since version 3.1.1,\n 'Eigen' is licensed under the Mozilla Public License (version 2); earlier\n version were licensed under the GNU LGPL version 3 or later. 'RcppEigen'\n (the 'Rcpp' bindings/bridge to 'Eigen') is licensed under the GNU GPL\n version 2 or later, as is the rest of 'Rcpp'.",
+        "License": "GPL (>= 2) | file LICENSE",
+        "LazyLoad": "yes",
+        "Depends": "R (>= 3.6.0)",
+        "LinkingTo": "Rcpp",
+        "Imports": "Rcpp (>= 0.11.0), stats, utils",
+        "Suggests": "Matrix, inline, tinytest, pkgKitten, microbenchmark",
+        "URL": "https://github.com/RcppCore/RcppEigen,\nhttps://dirk.eddelbuettel.com/code/rcpp.eigen.html",
+        "BugReports": "https://github.com/RcppCore/RcppEigen/issues",
+        "NeedsCompilation": "yes",
+        "Packaged": "2024-02-28 13:13:53 UTC; edd",
+        "Repository": "CRAN",
+        "Date/Publication": "2024-02-28 19:10:20 UTC",
+        "Built": "R 4.3.1; aarch64-apple-darwin20; 2024-03-03 23:45:17 UTC; unix",
+        "Archs": "RcppEigen.so.dSYM"
+      }
+    },
+    "RcppParallel": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com/",
+      "description": {
+        "Package": "RcppParallel",
+        "Type": "Package",
+        "Title": "Parallel Programming Tools for 'Rcpp'",
+        "Version": "5.1.7",
+        "Authors@R": "c(\n    person(\"JJ\", \"Allaire\", role = c(\"aut\"), email = \"jj@rstudio.com\"),\n    person(\"Romain\", \"Francois\", role = c(\"aut\", \"cph\")),\n    person(\"Kevin\", \"Ushey\", role = c(\"aut\", \"cre\"), email = \"kevin@rstudio.com\"),\n    person(\"Gregory\", \"Vandenbrouck\", role = \"aut\"),\n    person(\"Marcus\", \"Geelnard\", role = c(\"aut\", \"cph\"),\n       comment = \"TinyThread library, https://tinythreadpp.bitsnbites.eu/\"),\n    person(\"Hamada S.\", \"Badr\",\n       email = \"badr@jhu.edu\",\n       role = c(\"ctb\"),\n       comment = c(ORCID = \"0000-0002-9808-2344\")),\n    person(family = \"Posit, PBC\", role = \"cph\"),\n    person(family = \"Intel\", role = c(\"aut\", \"cph\"),\n       comment = \"Intel TBB library, https://www.threadingbuildingblocks.org/\"),\n    person(family = \"Microsoft\", role = \"cph\")\n    )",
+        "Description": "High level functions for parallel programming with 'Rcpp'.\n    For example, the 'parallelFor()' function can be used to convert the work of\n    a standard serial \"for\" loop into a parallel one and the 'parallelReduce()'\n    function can be used for accumulating aggregate or other values.",
+        "Depends": "R (>= 3.0.2)",
+        "Suggests": "Rcpp, RUnit, knitr, rmarkdown",
+        "SystemRequirements": "GNU make, Intel TBB, Windows: cmd.exe and\ncscript.exe, Solaris: g++ is required",
+        "License": "GPL (>= 3)",
+        "URL": "https://rcppcore.github.io/RcppParallel/,\nhttps://github.com/RcppCore/RcppParallel",
+        "BugReports": "https://github.com/RcppCore/RcppParallel/issues",
+        "Biarch": "TRUE",
+        "RoxygenNote": "7.1.1",
+        "Encoding": "UTF-8",
+        "NeedsCompilation": "yes",
+        "Packaged": "2023-02-27 19:15:41 UTC; kevin",
+        "Author": "JJ Allaire [aut],\n  Romain Francois [aut, cph],\n  Kevin Ushey [aut, cre],\n  Gregory Vandenbrouck [aut],\n  Marcus Geelnard [aut, cph] (TinyThread library,\n    https://tinythreadpp.bitsnbites.eu/),\n  Hamada S. Badr [ctb] (<https://orcid.org/0000-0002-9808-2344>),\n  Posit, PBC [cph],\n  Intel [aut, cph] (Intel TBB library,\n    https://www.threadingbuildingblocks.org/),\n  Microsoft [cph]",
+        "Maintainer": "Kevin Ushey <kevin@rstudio.com>",
+        "Repository": "CRAN",
+        "Date/Publication": "2023-02-27 21:02:40 UTC",
+        "Built": "R 4.3.0; aarch64-apple-darwin20; 2023-04-11 04:35:22 UTC; unix"
+      }
+    },
+    "StanHeaders": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com/",
+      "description": {
+        "Package": "StanHeaders",
+        "Title": "C++ Header Files for Stan",
+        "Version": "2.32.6",
+        "Authors@R": "c(person(\"Ben\",family=\"Goodrich\", email=\"benjamin.goodrich@columbia.edu\", role=c('cre','aut')),\n             person(\"Joshua\", \"Pritikin\", role = \"ctb\"),\n             person(\"Andrew\", \"Gelman\", role = \"aut\"),\n             person(\"Bob\", \"Carpenter\",  role = \"aut\"),\n             person(\"Matt\", \"Hoffman\", role = \"aut\"),\n             person(\"Daniel\", \"Lee\", role = \"aut\"),\n             person(\"Michael\", \"Betancourt\", role = \"aut\"),\n             person(\"Marcus\", \"Brubaker\", role = \"aut\"),\n             person(\"Jiqiang\", \"Guo\", role = \"aut\"),\n             person(\"Peter\", \"Li\", role = \"aut\"),\n             person(\"Allen\", \"Riddell\", role = \"aut\"),\n             person(\"Marco\", \"Inacio\", role = \"aut\"),\n             person(\"Mitzi\", \"Morris\", role = \"aut\"),\n             person(\"Jeffrey\", \"Arnold\", role = \"aut\"),\n             person(\"Rob\", \"Goedman\", role = \"aut\"),\n             person(\"Brian\", \"Lau\", role = \"aut\"),\n             person(\"Rob\", \"Trangucci\", role = \"aut\"),\n             person(\"Jonah\", \"Gabry\", role = \"aut\"),\n             person(\"Alp\", \"Kucukelbir\", role = \"aut\"),\n             person(\"Robert\", \"Grant\", role = \"aut\"),\n             person(\"Dustin\", \"Tran\", role = \"aut\"),\n             person(\"Michael\", \"Malecki\", role = \"aut\"),\n             person(\"Yuanjun\", \"Gao\", role = \"aut\"),\n             person(\"Hamada S.\", \"Badr\", role = c(\"aut\"),\n                    email = \"badr@jhu.edu\",\n                    comment = c(ORCID = \"0000-0002-9808-2344\")),\n             person(\"Trustees of\", \"Columbia University\", role = \"cph\"),\n             person(\"Lawrence Livermore\", \"National Security\", role = \"cph\", comment = \"CVODES\"),\n             person(\"The Regents of the\", \"University of California\", role = \"cph\", comment = \"CVODES\"),\n             person(\"Southern Methodist\", \"University\", role = \"cph\", comment = \"CVODES\"))",
+        "URL": "https://mc-stan.org/",
+        "Description": "The C++ header files of the Stan project are provided by this package, but it contains little R code or documentation. The main reference is the vignette. There is a shared object containing part of the 'CVODES' library, but its functionality is not accessible from R. 'StanHeaders' is primarily useful for developers who want to utilize the 'LinkingTo' directive of their package's DESCRIPTION file to build on the Stan library without incurring unnecessary dependencies. The Stan project develops a probabilistic programming language that implements full or approximate Bayesian statistical inference via Markov Chain Monte Carlo or 'variational' methods and implements (optionally penalized) maximum likelihood estimation via optimization. The Stan library includes an advanced automatic differentiation scheme, 'templated' statistical and linear algebra functions that can handle the automatically 'differentiable' scalar types (and doubles, 'ints', etc.), and a parser for the Stan language. The 'rstan' package provides user-facing R functions to parse, compile, test, estimate, and analyze Stan models.",
+        "Imports": "RcppParallel (>= 5.1.4)",
+        "Suggests": "Rcpp, BH (>= 1.75.0-0), knitr (>= 1.36), rmarkdown, Matrix,\nmethods, rstan, withr",
+        "LinkingTo": "RcppEigen (>= 0.3.4.0.0), RcppParallel (>= 5.1.4)",
+        "VignetteBuilder": "knitr",
+        "SystemRequirements": "GNU make, pandoc",
+        "Depends": "R (>= 3.6.0)",
+        "License": "BSD_3_clause + file LICENSE",
+        "Encoding": "UTF-8",
+        "RoxygenNote": "7.1.2",
+        "NeedsCompilation": "yes",
+        "Author": "Ben Goodrich [cre, aut],\n  Joshua Pritikin [ctb],\n  Andrew Gelman [aut],\n  Bob Carpenter [aut],\n  Matt Hoffman [aut],\n  Daniel Lee [aut],\n  Michael Betancourt [aut],\n  Marcus Brubaker [aut],\n  Jiqiang Guo [aut],\n  Peter Li [aut],\n  Allen Riddell [aut],\n  Marco Inacio [aut],\n  Mitzi Morris [aut],\n  Jeffrey Arnold [aut],\n  Rob Goedman [aut],\n  Brian Lau [aut],\n  Rob Trangucci [aut],\n  Jonah Gabry [aut],\n  Alp Kucukelbir [aut],\n  Robert Grant [aut],\n  Dustin Tran [aut],\n  Michael Malecki [aut],\n  Yuanjun Gao [aut],\n  Hamada S. Badr [aut] (<https://orcid.org/0000-0002-9808-2344>),\n  Trustees of Columbia University [cph],\n  Lawrence Livermore National Security [cph] (CVODES),\n  The Regents of the University of California [cph] (CVODES),\n  Southern Methodist University [cph] (CVODES)",
+        "Maintainer": "Ben Goodrich <benjamin.goodrich@columbia.edu>",
+        "Repository": "CRAN",
+        "Date/Publication": "2024-03-01 15:12:37 UTC",
+        "Packaged": "2024-03-01 03:21:11 UTC; ben",
+        "Built": "R 4.3.1; aarch64-apple-darwin20; 2024-03-04 00:04:18 UTC; unix"
       }
     },
     "abind": {
@@ -387,6 +503,35 @@
         "Date/Publication": "2024-05-16 09:50:11 UTC",
         "Built": "R 4.3.3; aarch64-apple-darwin20; 2025-01-25 21:35:37 UTC; unix",
         "Archs": "cachem.so.dSYM"
+      }
+    },
+    "callr": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com/",
+      "description": {
+        "Package": "callr",
+        "Title": "Call R from R",
+        "Version": "3.7.3",
+        "Authors@R": "c(\n    person(\"Gábor\", \"Csárdi\", , \"csardi.gabor@gmail.com\", role = c(\"aut\", \"cre\", \"cph\"),\n           comment = c(ORCID = \"0000-0001-7098-9676\")),\n    person(\"Winston\", \"Chang\", role = \"aut\"),\n    person(\"RStudio\", role = c(\"cph\", \"fnd\")),\n    person(\"Mango Solutions\", role = c(\"cph\", \"fnd\"))\n  )",
+        "Description": "It is sometimes useful to perform a computation in a separate\n    R process, without affecting the current R process at all.  This\n    packages does exactly that.",
+        "License": "MIT + file LICENSE",
+        "URL": "https://callr.r-lib.org, https://github.com/r-lib/callr#readme",
+        "BugReports": "https://github.com/r-lib/callr/issues",
+        "Depends": "R (>= 3.4)",
+        "Imports": "processx (>= 3.6.1), R6, utils",
+        "Suggests": "asciicast, cli (>= 1.1.0), covr, mockery, ps, rprojroot,\nspelling, testthat (>= 3.0.0), withr (>= 2.3.0)",
+        "Encoding": "UTF-8",
+        "Language": "en-US",
+        "RoxygenNote": "7.2.1.9000",
+        "Config/testthat/edition": "3",
+        "Config/Needs/website": "r-lib/asciicast, glue, htmlwidgets, igraph,\ntibble, tidyverse/tidytemplate",
+        "NeedsCompilation": "no",
+        "Packaged": "2022-11-02 15:17:20 UTC; gaborcsardi",
+        "Author": "Gábor Csárdi [aut, cre, cph] (<https://orcid.org/0000-0001-7098-9676>),\n  Winston Chang [aut],\n  RStudio [cph, fnd],\n  Mango Solutions [cph, fnd]",
+        "Maintainer": "Gábor Csárdi <csardi.gabor@gmail.com>",
+        "Repository": "CRAN",
+        "Date/Publication": "2022-11-02 16:40:11 UTC",
+        "Built": "R 4.3.0; ; 2023-04-11 04:41:47 UTC; unix"
       }
     },
     "cellranger": {
@@ -643,6 +788,36 @@
         "Date/Publication": "2025-03-24 07:00:02 UTC",
         "Built": "R 4.3.3; aarch64-apple-darwin20; 2025-03-24 08:41:30 UTC; unix",
         "Archs": "curl.so.dSYM"
+      }
+    },
+    "desc": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com/",
+      "description": {
+        "Package": "desc",
+        "Title": "Manipulate DESCRIPTION Files",
+        "Version": "1.4.2",
+        "Authors@R": "c(\n    person(\"Gábor\", \"Csárdi\", , \"csardi.gabor@gmail.com\", role = c(\"aut\", \"cre\")),\n    person(\"Kirill\", \"Müller\", role = \"aut\"),\n    person(\"Jim\", \"Hester\", , \"james.f.hester@gmail.com\", role = \"aut\"),\n    person(\"Maëlle\", \"Salmon\", role = \"ctb\",\n           comment = c(ORCID = \"0000-0002-2815-0399\")),\n    person(\"RStudio\", role = c(\"cph\", \"fnd\"))\n  )",
+        "Maintainer": "Gábor Csárdi <csardi.gabor@gmail.com>",
+        "Description": "Tools to read, write, create, and manipulate DESCRIPTION\n    files.  It is intended for packages that create or manipulate other\n    packages.",
+        "License": "MIT + file LICENSE",
+        "URL": "https://github.com/r-lib/desc#readme,\nhttps://r-lib.github.io/desc/",
+        "BugReports": "https://github.com/r-lib/desc/issues",
+        "Depends": "R (>= 3.4)",
+        "Imports": "cli, R6, rprojroot, utils",
+        "Suggests": "callr, covr, gh, spelling, testthat, whoami, withr",
+        "Config/Needs/website": "tidyverse/tidytemplate",
+        "Config/testthat/edition": "3",
+        "Encoding": "UTF-8",
+        "Language": "en-US",
+        "RoxygenNote": "7.2.1.9000",
+        "Collate": "'assertions.R' 'authors-at-r.R' 'built.R' 'classes.R'\n'collate.R' 'constants.R' 'deps.R' 'desc-package.R'\n'description.R' 'encoding.R' 'latex.R' 'non-oo-api.R'\n'package-archives.R' 'read.R' 'remotes.R' 'str.R'\n'syntax_checks.R' 'urls.R' 'utils.R' 'validate.R' 'version.R'",
+        "NeedsCompilation": "no",
+        "Packaged": "2022-09-08 09:02:11 UTC; gaborcsardi",
+        "Author": "Gábor Csárdi [aut, cre],\n  Kirill Müller [aut],\n  Jim Hester [aut],\n  Maëlle Salmon [ctb] (<https://orcid.org/0000-0002-2815-0399>),\n  RStudio [cph, fnd]",
+        "Repository": "CRAN",
+        "Date/Publication": "2022-09-08 10:52:55 UTC",
+        "Built": "R 4.3.0; ; 2023-04-11 04:37:08 UTC; unix"
       }
     },
     "digest": {
@@ -1124,6 +1299,30 @@
         "Built": "R 4.3.0; ; 2023-06-11 06:23:13 UTC; unix"
       }
     },
+    "gridExtra": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com/",
+      "description": {
+        "Package": "gridExtra",
+        "Authors@R": "c(person(\"Baptiste\", \"Auguie\",\n    email = \"baptiste.auguie@gmail.com\",\n    role = c(\"aut\", \"cre\")), person(\"Anton\", \"Antonov\",\n    email = \"tonytonov@gmail.com\",\n    role = c(\"ctb\")))",
+        "License": "GPL (>= 2)",
+        "Title": "Miscellaneous Functions for \"Grid\" Graphics",
+        "Type": "Package",
+        "Description": "Provides a number of user-level functions to work with \"grid\"\n    graphics, notably to arrange multiple grid-based plots on a page, and draw\n    tables.",
+        "Version": "2.3",
+        "VignetteBuilder": "knitr",
+        "Imports": "gtable, grid, grDevices, graphics, utils",
+        "Suggests": "ggplot2, egg, lattice, knitr, testthat",
+        "RoxygenNote": "6.0.1",
+        "NeedsCompilation": "no",
+        "Packaged": "2017-09-08 22:52:09 UTC; baptiste",
+        "Author": "Baptiste Auguie [aut, cre],\n  Anton Antonov [ctb]",
+        "Maintainer": "Baptiste Auguie <baptiste.auguie@gmail.com>",
+        "Repository": "CRAN",
+        "Date/Publication": "2017-09-09 14:12:08 UTC",
+        "Built": "R 4.3.0; ; 2023-04-11 04:42:09 UTC; unix"
+      }
+    },
     "gtable": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com/",
@@ -1352,6 +1551,31 @@
         "Repository": "CRAN",
         "Date/Publication": "2017-05-31 08:49:59 UTC",
         "Built": "R 4.3.0; ; 2023-04-11 04:43:11 UTC; unix"
+      }
+    },
+    "inline": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com/",
+      "description": {
+        "Package": "inline",
+        "Version": "0.3.19",
+        "Date": "2021-05-25",
+        "Title": "Functions to Inline C, C++, Fortran Function Calls from R",
+        "Author": "Oleg Sklyar, Duncan Murdoch, Mike Smith, Dirk Eddelbuettel, \n Romain Francois, Karline Soetaert, Johannes Ranke",
+        "Maintainer": "Dirk Eddelbuettel <edd@debian.org>",
+        "Imports": "methods",
+        "Suggests": "Rcpp (>= 0.11.0), tinytest",
+        "Description": "Functionality to dynamically define R functions and S4 methods\n with 'inlined' C, C++ or Fortran code supporting the .C and .Call calling\n conventions.",
+        "License": "LGPL",
+        "Copyright": "Oleg Sklyar, 2005-2010 and other authors per their commits",
+        "LazyLoad": "yes",
+        "URL": "https://github.com/eddelbuettel/inline,\nhttps://dirk.eddelbuettel.com/code/inline.html",
+        "BugReports": "https://github.com/eddelbuettel/inline/issues",
+        "NeedsCompilation": "no",
+        "Packaged": "2021-05-25 12:45:08 UTC; edd",
+        "Repository": "CRAN",
+        "Date/Publication": "2021-05-31 08:40:02 UTC",
+        "Built": "R 4.3.0; ; 2023-04-11 04:34:46 UTC; unix"
       }
     },
     "isoband": {
@@ -1597,6 +1821,37 @@
         "Repository": "CRAN",
         "Date/Publication": "2022-10-07 09:50:02 UTC",
         "Built": "R 4.3.0; ; 2023-04-11 04:36:44 UTC; unix"
+      }
+    },
+    "loo": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com/",
+      "description": {
+        "Package": "loo",
+        "Type": "Package",
+        "Title": "Efficient Leave-One-Out Cross-Validation and WAIC for Bayesian\nModels",
+        "Version": "2.8.0",
+        "Date": "2024-07-03",
+        "Authors@R": "c(person(\"Aki\", \"Vehtari\", email = \"Aki.Vehtari@aalto.fi\", role = c(\"aut\")),\n             person(\"Jonah\", \"Gabry\", email = \"jsg2201@columbia.edu\", role = c(\"cre\", \"aut\")),\n             person(\"Måns\", \"Magnusson\", role = c(\"aut\")),\n             person(\"Yuling\", \"Yao\", role = c(\"aut\")),\n             person(\"Paul-Christian\", \"Bürkner\", role = c(\"aut\")),\n             person(\"Topi\", \"Paananen\", role = c(\"aut\")),\n             person(\"Andrew\", \"Gelman\", role = c(\"aut\")),\n             person(\"Ben\", \"Goodrich\", role = c(\"ctb\")),\n             person(\"Juho\", \"Piironen\", role = c(\"ctb\")), \n             person(\"Bruno\", \"Nicenboim\", role = c(\"ctb\")), \n             person(\"Leevi\", \"Lindgren\", role = c(\"ctb\")))",
+        "Maintainer": "Jonah Gabry <jsg2201@columbia.edu>",
+        "URL": "https://mc-stan.org/loo/, https://discourse.mc-stan.org",
+        "BugReports": "https://github.com/stan-dev/loo/issues",
+        "Description": "Efficient approximate leave-one-out cross-validation (LOO)\n    for Bayesian models fit using Markov chain Monte Carlo, as \n    described in Vehtari, Gelman, and Gabry (2017) \n    <doi:10.1007/s11222-016-9696-4>. \n    The approximation uses Pareto smoothed importance sampling (PSIS), \n    a new procedure for regularizing importance weights. \n    As a byproduct of the calculations, we also obtain approximate \n    standard errors for estimated predictive errors and for the comparison \n    of predictive errors between models. The package also provides methods \n    for using stacking and other model weighting techniques to average \n    Bayesian predictive distributions.",
+        "License": "GPL (>= 3)",
+        "LazyData": "TRUE",
+        "Depends": "R (>= 3.1.2)",
+        "Imports": "checkmate, matrixStats (>= 0.52), parallel, posterior (>=\n1.5.0), stats",
+        "Suggests": "bayesplot (>= 1.7.0), brms (>= 2.10.0), ggplot2, graphics,\nknitr, rmarkdown, rstan, rstanarm (>= 2.19.0), rstantools,\nspdep, testthat (>= 2.1.0)",
+        "VignetteBuilder": "knitr",
+        "Encoding": "UTF-8",
+        "SystemRequirements": "pandoc (>= 1.12.3), pandoc-citeproc",
+        "RoxygenNote": "7.3.1",
+        "NeedsCompilation": "no",
+        "Packaged": "2024-07-03 16:26:26 UTC; jgabry",
+        "Author": "Aki Vehtari [aut],\n  Jonah Gabry [cre, aut],\n  Måns Magnusson [aut],\n  Yuling Yao [aut],\n  Paul-Christian Bürkner [aut],\n  Topi Paananen [aut],\n  Andrew Gelman [aut],\n  Ben Goodrich [ctb],\n  Juho Piironen [ctb],\n  Bruno Nicenboim [ctb],\n  Leevi Lindgren [ctb]",
+        "Repository": "CRAN",
+        "Date/Publication": "2024-07-03 18:50:02 UTC",
+        "Built": "R 4.3.3; ; 2024-09-17 23:19:06 UTC; unix"
       }
     },
     "magrittr": {
@@ -1870,6 +2125,34 @@
         "Built": "R 4.3.0; ; 2023-04-11 04:41:34 UTC; unix"
       }
     },
+    "pkgbuild": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com/",
+      "description": {
+        "Package": "pkgbuild",
+        "Title": "Find Tools Needed to Build R Packages",
+        "Version": "1.4.2",
+        "Authors@R": "c(\n    person(\"Hadley\", \"Wickham\", role = \"aut\"),\n    person(\"Jim\", \"Hester\", role = \"aut\"),\n    person(\"Gábor\", \"Csárdi\", , \"csardi.gabor@gmail.com\", role = c(\"aut\", \"cre\")),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"))\n  )",
+        "Description": "Provides functions used to build R packages. Locates\n    compilers needed to build R packages on various platforms and ensures\n    the PATH is configured appropriately so R can use them.",
+        "License": "MIT + file LICENSE",
+        "URL": "https://github.com/r-lib/pkgbuild, https://pkgbuild.r-lib.org",
+        "BugReports": "https://github.com/r-lib/pkgbuild/issues",
+        "Depends": "R (>= 3.4)",
+        "Imports": "callr (>= 3.2.0), cli (>= 3.4.0), crayon, desc, prettyunits,\nprocessx, R6, rprojroot",
+        "Suggests": "covr, cpp11, knitr, mockery, Rcpp, rmarkdown, testthat (>=\n3.0.0), withr (>= 2.3.0)",
+        "Config/Needs/website": "tidyverse/tidytemplate",
+        "Encoding": "UTF-8",
+        "RoxygenNote": "7.2.3",
+        "Config/testthat/edition": "3",
+        "NeedsCompilation": "no",
+        "Packaged": "2023-06-26 11:12:19 UTC; gaborcsardi",
+        "Author": "Hadley Wickham [aut],\n  Jim Hester [aut],\n  Gábor Csárdi [aut, cre],\n  Posit Software, PBC [cph, fnd]",
+        "Maintainer": "Gábor Csárdi <csardi.gabor@gmail.com>",
+        "Repository": "CRAN",
+        "Date/Publication": "2023-06-26 11:50:02 UTC",
+        "Built": "R 4.3.0; ; 2023-06-26 12:23:03 UTC; unix"
+      }
+    },
     "pkgconfig": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com/",
@@ -1946,6 +2229,34 @@
         "Built": "R 4.3.0; ; 2023-04-11 04:31:42 UTC; unix"
       }
     },
+    "processx": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com/",
+      "description": {
+        "Package": "processx",
+        "Title": "Execute and Control System Processes",
+        "Version": "3.8.2",
+        "Authors@R": "c(\n    person(\"Gábor\", \"Csárdi\", , \"csardi.gabor@gmail.com\", role = c(\"aut\", \"cre\", \"cph\"),\n           comment = c(ORCID = \"0000-0001-7098-9676\")),\n    person(\"Winston\", \"Chang\", role = \"aut\"),\n    person(\"RStudio\", role = c(\"cph\", \"fnd\")),\n    person(\"Mango Solutions\", role = c(\"cph\", \"fnd\"))\n  )",
+        "Description": "Tools to run system processes in the background.  It can\n    check if a background process is running; wait on a background process\n    to finish; get the exit status of finished processes; kill background\n    processes. It can read the standard output and error of the processes,\n    using non-blocking connections. 'processx' can poll a process for\n    standard output or error, with a timeout. It can also poll several\n    processes at once.",
+        "License": "MIT + file LICENSE",
+        "URL": "https://processx.r-lib.org,\nhttps://github.com/r-lib/processx#readme",
+        "BugReports": "https://github.com/r-lib/processx/issues",
+        "Depends": "R (>= 3.4.0)",
+        "Imports": "ps (>= 1.2.0), R6, utils",
+        "Suggests": "callr (>= 3.7.3), cli (>= 3.3.0), codetools, covr, curl,\ndebugme, parallel, rlang (>= 1.0.2), testthat (>= 3.0.0),\nwebfakes, withr",
+        "Encoding": "UTF-8",
+        "RoxygenNote": "7.2.0",
+        "Config/testthat/edition": "3",
+        "Config/Needs/website": "tidyverse/tidytemplate",
+        "NeedsCompilation": "yes",
+        "Packaged": "2023-06-30 10:01:10 UTC; gaborcsardi",
+        "Author": "Gábor Csárdi [aut, cre, cph] (<https://orcid.org/0000-0001-7098-9676>),\n  Winston Chang [aut],\n  RStudio [cph, fnd],\n  Mango Solutions [cph, fnd]",
+        "Maintainer": "Gábor Csárdi <csardi.gabor@gmail.com>",
+        "Repository": "CRAN",
+        "Date/Publication": "2023-06-30 20:40:02 UTC",
+        "Built": "R 4.3.0; aarch64-apple-darwin20; 2023-06-30 21:46:00 UTC; unix"
+      }
+    },
     "progress": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com/",
@@ -2000,6 +2311,35 @@
         "Date/Publication": "2024-11-28 00:40:02 UTC",
         "Built": "R 4.3.3; aarch64-apple-darwin20; 2025-01-24 17:56:00 UTC; unix",
         "Archs": "promises.so.dSYM"
+      }
+    },
+    "ps": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com/",
+      "description": {
+        "Package": "ps",
+        "Title": "List, Query, Manipulate System Processes",
+        "Version": "1.7.5",
+        "Authors@R": "c(\n    person(\"Jay\", \"Loden\", role = \"aut\"),\n    person(\"Dave\", \"Daeschler\", role = \"aut\"),\n    person(\"Giampaolo\", \"Rodola'\", role = \"aut\"),\n    person(\"Gábor\", \"Csárdi\", , \"csardi.gabor@gmail.com\", role = c(\"aut\", \"cre\")),\n    person(\"RStudio\", role = c(\"cph\", \"fnd\"))\n  )",
+        "Description": "List, query and manipulate all system processes, on\n    'Windows', 'Linux' and 'macOS'.",
+        "License": "MIT + file LICENSE",
+        "URL": "https://github.com/r-lib/ps#readme, https://ps.r-lib.org/",
+        "BugReports": "https://github.com/r-lib/ps/issues",
+        "Depends": "R (>= 3.4)",
+        "Imports": "utils",
+        "Suggests": "callr, covr, curl, pillar, pingr, processx (>= 3.1.0), R6,\nrlang, testthat (>= 3.0.0), webfakes",
+        "Biarch": "true",
+        "Encoding": "UTF-8",
+        "RoxygenNote": "7.2.1",
+        "Config/testthat/edition": "3",
+        "Config/Needs/website": "tidyverse/tidytemplate",
+        "NeedsCompilation": "yes",
+        "Packaged": "2023-04-18 14:27:32 UTC; gaborcsardi",
+        "Author": "Jay Loden [aut],\n  Dave Daeschler [aut],\n  Giampaolo Rodola' [aut],\n  Gábor Csárdi [aut, cre],\n  RStudio [cph, fnd]",
+        "Maintainer": "Gábor Csárdi <csardi.gabor@gmail.com>",
+        "Repository": "CRAN",
+        "Date/Publication": "2023-04-18 19:30:02 UTC",
+        "Built": "R 4.3.0; aarch64-apple-darwin20; 2023-04-18 20:59:27 UTC; unix"
       }
     },
     "purrr": {
@@ -2221,6 +2561,65 @@
         "Repository": "CRAN",
         "Date/Publication": "2023-06-01 13:10:03 UTC",
         "Built": "R 4.3.0; ; 2023-06-01 14:15:56 UTC; unix"
+      }
+    },
+    "rprojroot": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com/",
+      "description": {
+        "Package": "rprojroot",
+        "Title": "Finding Files in Project Subdirectories",
+        "Version": "2.0.4",
+        "Authors@R": "\n    person(given = \"Kirill\",\n           family = \"M\\u00fcller\",\n           role = c(\"aut\", \"cre\"),\n           email = \"kirill@cynkra.com\",\n           comment = c(ORCID = \"0000-0002-1416-3412\"))",
+        "Description": "Robust, reliable and flexible paths to files below\n    a project root. The 'root' of a project is defined as a directory that\n    matches a certain criterion, e.g., it contains a certain regular file.",
+        "License": "MIT + file LICENSE",
+        "URL": "https://rprojroot.r-lib.org/, https://github.com/r-lib/rprojroot",
+        "BugReports": "https://github.com/r-lib/rprojroot/issues",
+        "Depends": "R (>= 3.0.0)",
+        "Suggests": "covr, knitr, lifecycle, mockr, rlang, rmarkdown, testthat (>=\n3.0.0), withr",
+        "VignetteBuilder": "knitr",
+        "Config/testthat/edition": "3",
+        "Encoding": "UTF-8",
+        "RoxygenNote": "7.2.3",
+        "NeedsCompilation": "no",
+        "Packaged": "2023-11-05 06:47:23 UTC; kirill",
+        "Author": "Kirill Müller [aut, cre] (<https://orcid.org/0000-0002-1416-3412>)",
+        "Maintainer": "Kirill Müller <kirill@cynkra.com>",
+        "Repository": "CRAN",
+        "Date/Publication": "2023-11-05 10:20:02 UTC",
+        "Built": "R 4.3.3; ; 2025-01-25 05:51:14 UTC; unix"
+      }
+    },
+    "rstan": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com/",
+      "description": {
+        "Package": "rstan",
+        "Type": "Package",
+        "Title": "R Interface to Stan",
+        "Version": "2.32.6",
+        "Authors@R": "c(person(\"Jiqiang\", \"Guo\", email = \"guojq28@gmail.com\", role = \"aut\"),\n             person(\"Jonah\", \"Gabry\", email = \"jsg2201@columbia.edu\", role = \"aut\"),\n             person(\"Ben\", \"Goodrich\", email = \"benjamin.goodrich@columbia.edu\", role = c(\"cre\", \"aut\")),\n             person(\"Andrew\", \"Johnson\", email = \"andrew.johnson@arjohnsonau.com\", role = \"aut\"),\n             person(\"Sebastian\", \"Weber\", email = \"sdw.post@waebers.de\", role = \"aut\"),\n             person(\"Hamada S.\", \"Badr\", role = c(\"aut\"),\n                    email = \"badr@jhu.edu\",\n                    comment = c(ORCID = \"0000-0002-9808-2344\")),\n             person(\"Daniel\", \"Lee\", role = \"ctb\"),\n             person(\"Krzysztof\", \"Sakrejda\", role = \"ctb\"),\n             person(\"Modrak\", \"Martin\", role = \"ctb\"),\n             person(\"Trustees of\", \"Columbia University\", role = \"cph\"),\n             person(\"Oleg\", \"Sklyar\", role = \"cph\", comment = \"R/cxxfunplus.R\"),\n             person(\"The R\", \"Core Team\", role = \"cph\", comment = \"R/pairs.R, R/dynGet.R\"),\n             person(\"Jens\", \"Oehlschlaegel-Akiyoshi\", role = \"cph\", comment = \"R/pairs.R\"),\n             person(\"John\", \"Maddock\", role = \"cph\", comment = \"gamma.hpp\"),\n             person(\"Paul\", \"Bristow\", role = \"cph\", comment = \"gamma.hpp\"),\n             person(\"Nikhar\", \"Agrawal\", role = \"cph\", comment = \"gamma.hpp\"),\n             person(\"Christopher\", \"Kormanyos\", role = \"cph\", comment = \"gamma.hpp\"),\n             person(\"Bronder\", \"Steve\", role = \"ctb\"))",
+        "Description": "User-facing R functions are provided to parse, compile, test,\n    estimate, and analyze Stan models by accessing the header-only Stan library\n    provided by the 'StanHeaders' package. The Stan project develops a probabilistic\n    programming language that implements full Bayesian statistical inference\n    via Markov Chain Monte Carlo, rough Bayesian inference via 'variational'\n    approximation, and (optionally penalized) maximum likelihood estimation via\n    optimization. In all three cases, automatic differentiation is used to quickly\n    and accurately evaluate gradients without burdening the user with the need to\n    derive the partial derivatives.",
+        "License": "GPL (>= 3)",
+        "NeedsCompilation": "yes",
+        "Imports": "methods, stats4, inline (>= 0.3.19), gridExtra (>= 2.3), Rcpp\n(>= 1.0.7), RcppParallel (>= 5.1.4), loo (>= 2.4.1), pkgbuild\n(>= 1.2.0), QuickJSR, ggplot2 (>= 3.3.5)",
+        "Depends": "R (>= 3.4.0), StanHeaders (>= 2.32.0)",
+        "LinkingTo": "Rcpp (>= 1.0.7), RcppEigen (>= 0.3.4.0.0), BH (>= 1.75.0-0),\nStanHeaders (>= 2.32.0), RcppParallel (>= 5.1.4)",
+        "Suggests": "testthat (>= 3.0.4), parallel, KernSmooth, shinystan,\nbayesplot, rmarkdown, rstantools, rstudioapi, Matrix, knitr,\ncoda, V8",
+        "URL": "https://mc-stan.org/rstan/, https://discourse.mc-stan.org",
+        "BugReports": "https://github.com/stan-dev/rstan/issues/",
+        "VignetteBuilder": "knitr",
+        "SystemRequirements": "GNU make, pandoc",
+        "Encoding": "UTF-8",
+        "RoxygenNote": "7.1.2",
+        "Config/testthat/edition": "3",
+        "Packaged": "2024-03-04 23:38:11 UTC; ben",
+        "Author": "Jiqiang Guo [aut],\n  Jonah Gabry [aut],\n  Ben Goodrich [cre, aut],\n  Andrew Johnson [aut],\n  Sebastian Weber [aut],\n  Hamada S. Badr [aut] (<https://orcid.org/0000-0002-9808-2344>),\n  Daniel Lee [ctb],\n  Krzysztof Sakrejda [ctb],\n  Modrak Martin [ctb],\n  Trustees of Columbia University [cph],\n  Oleg Sklyar [cph] (R/cxxfunplus.R),\n  The R Core Team [cph] (R/pairs.R, R/dynGet.R),\n  Jens Oehlschlaegel-Akiyoshi [cph] (R/pairs.R),\n  John Maddock [cph] (gamma.hpp),\n  Paul Bristow [cph] (gamma.hpp),\n  Nikhar Agrawal [cph] (gamma.hpp),\n  Christopher Kormanyos [cph] (gamma.hpp),\n  Bronder Steve [ctb]",
+        "Maintainer": "Ben Goodrich <benjamin.goodrich@columbia.edu>",
+        "Repository": "CRAN",
+        "Date/Publication": "2024-03-05 17:00:02 UTC",
+        "Built": "R 4.3.1; aarch64-apple-darwin20; 2024-03-05 22:02:57 UTC; unix",
+        "Archs": "rstan.so.dSYM"
       }
     },
     "rstudioapi": {
@@ -2981,7 +3380,7 @@
       "checksum": "a0a133ffd5953943310165243593dc6b"
     },
     "global.R": {
-      "checksum": "2dd92119a5366814e151a986c87b5073"
+      "checksum": "79261fb1eeec689650de436e49168bc1"
     },
     "server.R": {
       "checksum": "a9de008091ff561828ee36633b3fa05e"
