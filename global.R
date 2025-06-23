@@ -12,7 +12,7 @@ library(purrr)
 library(posterior)
 library(ggplot2)
 library(tidyr)
-#0library(rstan)
+library(rstan)
 
 source("./functions.R")
 
