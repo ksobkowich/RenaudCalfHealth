@@ -1033,10 +1033,16 @@ function(input, output, session) {
     df <- batch_igg_data()
     
     df_pred <- df %>%
+      mutate(
+        IgG_obs = as.numeric(.data[[input$batch_igg_value_column]]),
+        Day_obs = as.numeric(.data[[input$batch_igg_day_column]])
+      ) %>%
+      # Filter out invalid values
+      filter(IgG_obs > 0, Day_obs > 1, Day_obs < 7) %>%
       rowwise() %>%
       mutate(pred = list(calculate_day_1_igg(
-        IgG_obs = cur_data()[[input$batch_igg_value_column]],
-        Day_obs = cur_data()[[input$batch_igg_day_column]]
+        IgG_obs = IgG_obs,
+        Day_obs = Day_obs
       ))) %>%
       unnest_wider(pred) %>%
       ungroup() %>%
@@ -1053,6 +1059,7 @@ function(input, output, session) {
         "Lower 50 CI" = lower_50,
         "Upper 50 CI" = upper_50
       )
+    
     
     batch_igg_data_predicted(df_pred)
     })
