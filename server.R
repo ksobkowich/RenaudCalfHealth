@@ -1155,9 +1155,9 @@ function(input, output, session) {
     )
     
     ggplot(df_summary, aes(x = Score, y = n, fill = Score)) +
-      geom_col(width = 0.8) +
+      geom_col(width = 0.75) +
       geom_text(aes(label = paste0(round(Percent, 1), "%")),
-                vjust = -0.5, size = 6) +
+                vjust = -0.5, size = 5) +
       scale_fill_manual(values = blue_red_palette) +
       labs(
         title = "",
