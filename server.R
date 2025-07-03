@@ -1154,9 +1154,6 @@ function(input, output, session) {
       "Poor\n(< 10 g/L)"      = "#ff5e5e"
     )
     
-    font_add_google("Fira Sans", "fira")
-    showtext_auto()
-    
     ggplot(df_summary, aes(x = Score, y = n, fill = Score)) +
       geom_col(width = 0.8) +
       geom_text(aes(label = paste0(round(Percent, 1), "%")),
@@ -1167,7 +1164,7 @@ function(input, output, session) {
         x = "Estimated Day 1 IgG",
         y = "Number of Calves"
       ) +
-      theme_minimal(base_size = 18, base_family = "fira") +
+      theme_minimal(base_size = 18) +
       theme(legend.position = "none",
             panel.grid.major.x = element_blank())
     
