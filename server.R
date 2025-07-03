@@ -842,7 +842,7 @@ function(input, output, session) {
   single_igg_result <- reactiveVal(NULL)
   
   observeEvent(input$single_igg_submit_button, {
-
+    
     if (is.null(input$single_igg_value) || is.null(input$single_igg_day) ||
         is.na(input$single_igg_value) || is.na(input$single_igg_day) ||
         !is.numeric(input$single_igg_value) || !is.numeric(input$single_igg_day) ||
@@ -921,7 +921,7 @@ function(input, output, session) {
       labs(caption = "Prediction Interval") +
       coord_cartesian(ylim = c(0.94, 1.05))
     
-
+    
   })
   
   ## Batch Calculations -----------------------------------------------------
@@ -1029,39 +1029,39 @@ function(input, output, session) {
     req(batch_igg_data())
     
     withProgress(message = 'Calculating IgG Values...', value = 0, {
-    
-    df <- batch_igg_data()
-    
-    df_pred <- df %>%
-      mutate(
-        IgG_obs = as.numeric(.data[[input$batch_igg_value_column]]),
-        Day_obs = as.numeric(.data[[input$batch_igg_day_column]])
-      ) %>%
-      # Filter out invalid values
-      filter(IgG_obs > 0, Day_obs > 1, Day_obs < 7) %>%
-      rowwise() %>%
-      mutate(pred = list(calculate_day_1_igg(
-        IgG_obs = IgG_obs,
-        Day_obs = Day_obs
-      ))) %>%
-      unnest_wider(pred) %>%
-      ungroup() %>%
-      mutate(across(
-        c(median, lower_95, upper_95, lower_80, upper_80, lower_50, upper_50),
-        ~ round(.x, 1)
-      )) %>%
-      rename(
-        "Day 1 IgG (g/L)" = median,
-        "Lower 95 CI" = lower_95,
-        "Upper 95 CI" = upper_95,
-        "Lower 80 CI" = lower_80,
-        "Upper 80 CI" = upper_80,
-        "Lower 50 CI" = lower_50,
-        "Upper 50 CI" = upper_50
-      )
-    
-    
-    batch_igg_data_predicted(df_pred)
+      
+      df <- batch_igg_data()
+      
+      df_pred <- df %>%
+        mutate(
+          IgG_obs = as.numeric(.data[[input$batch_igg_value_column]]),
+          Day_obs = as.numeric(.data[[input$batch_igg_day_column]])
+        ) %>%
+        # Filter out invalid values
+        filter(IgG_obs > 0, Day_obs > 1, Day_obs < 7) %>%
+        rowwise() %>%
+        mutate(pred = list(calculate_day_1_igg(
+          IgG_obs = IgG_obs,
+          Day_obs = Day_obs
+        ))) %>%
+        unnest_wider(pred) %>%
+        ungroup() %>%
+        mutate(across(
+          c(median, lower_95, upper_95, lower_80, upper_80, lower_50, upper_50),
+          ~ round(.x, 1)
+        )) %>%
+        rename(
+          "Day 1 IgG (g/L)" = median,
+          "Lower 95 CI" = lower_95,
+          "Upper 95 CI" = upper_95,
+          "Lower 80 CI" = lower_80,
+          "Upper 80 CI" = upper_80,
+          "Lower 50 CI" = lower_50,
+          "Upper 50 CI" = upper_50
+        )
+      
+      
+      batch_igg_data_predicted(df_pred)
     })
   })
   
@@ -1071,11 +1071,20 @@ function(input, output, session) {
     
     tagList(
       wellPanel(
-        DTOutput("batch_igg_result_table"),
-        br(),
-        div(
-          downloadButton("batch_igg_result_download", "Download", class = "submit_button"),
-          style = "text-align: right;"
+        tabsetPanel(
+          tabPanel("Plot",
+                   br(),
+                   plotOutput("batch_igg_result_plot")
+          ),
+          tabPanel("Table",
+                   br(),
+                   DTOutput("batch_igg_result_table"),
+                   br(),
+                   div(
+                     downloadButton("batch_igg_result_download", "Download", class = "submit_button"),
+                     style = "text-align: right;"
+                   )
+          )
         )
       )
     )
@@ -1102,6 +1111,65 @@ function(input, output, session) {
         color = "#4facfe",
         fontWeight = "bold"
       )
+    
+  })
+  
+  output$batch_igg_result_plot <- renderPlot({
+    req(batch_igg_data_predicted())
+    
+    df <- batch_igg_data_predicted()
+    
+    df <- data %>%
+      select(Calf.ID, IgG.Day.1, Day = .data[[input$batch_igg_day_column]]) %>%
+      mutate(
+        IgG.Day.1 = as.numeric(IgG.Day.1),
+        Day = as.numeric(Day)
+      ) %>%
+      filter(!is.na(IgG.Day.1), IgG.Day.1 != 0) %>%
+      group_by(Calf.ID) %>%
+      slice_min(abs(Day - 1), with_ties = FALSE) %>%
+      ungroup() %>%
+      mutate(Score = case_when(
+        IgG.Day.1 > 25 ~ "Excellent\n(> 25 g/L IgG)",
+        IgG.Day.1 >= 18 ~ "Good\n(18 to 24.9 g/L)",
+        IgG.Day.1 >= 10 ~ "Fair\n(10-17.9 g/L)",
+        TRUE ~ "Poor\n(< 10 g/L)"
+      )) %>%
+      count(Score) %>%
+      mutate(
+        Score = factor(Score, levels = c(
+          "Excellent\n(> 25 g/L IgG)",
+          "Good\n(18 to 24.9 g/L)",
+          "Fair\n(10-17.9 g/L)",
+          "Poor\n(< 10 g/L)"
+        )),
+        Percent = n / sum(n) * 100
+      )
+    df_summary$Score <- factor(df_summary$Score, levels = c("Excellent\n(> 25 g/L IgG)", "Good\n(18 to 24.9 g/L)", "Fair\n(10-17.9 g/L)", "Poor\n(< 10 g/L)"))
+    
+    blue_red_palette <- c(
+      "Excellent\n(> 25 g/L IgG)" = "#4facfe",
+      "Good\n(18 to 24.9 g/L)"      = "#90C4FF",
+      "Fair\n(10-17.9 g/L)"      = "#C0DDFF",
+      "Poor\n(< 10 g/L)"      = "#ff5e5e"
+    )
+    
+    font_add_google("Fira Sans", "fira")
+    showtext_auto()
+    
+    ggplot(df_summary, aes(x = Score, y = n, fill = Score)) +
+      geom_col(width = 0.8) +
+      geom_text(aes(label = paste0(round(Percent, 1), "%")),
+                vjust = -0.5, size = 6) +
+      scale_fill_manual(values = blue_red_palette) +
+      labs(
+        title = "",
+        x = "Estimated Day 1 IgG",
+        y = "Number of Calves"
+      ) +
+      theme_minimal(base_size = 18, base_family = "fira") +
+      theme(legend.position = "none",
+            panel.grid.major.x = element_blank())
     
   })
   
