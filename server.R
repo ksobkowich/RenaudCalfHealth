@@ -996,9 +996,11 @@ function(input, output, session) {
     
     igg_matches <- c("igg", "igg value", "igg_value", "igg (g/l)")
     day_matches <- c("day", "days", "day sample taken", "sample day")
+    id_matches <- c("id", "number", "calf", "cow")
     
     selected_igg <- col_names[which(tolower(col_names) %in% tolower(igg_matches))[1]]
     selected_day <- col_names[which(tolower(col_names) %in% tolower(day_matches))[1]]
+    selected_id <- col_names[which(tolower(col_names) %in% tolower(id_matches))[1]]
     
     fluidRow(
       column(6,
@@ -1018,6 +1020,15 @@ function(input, output, session) {
                choices = col_names,
                options = list(placeholder = "Select column...")
              )
+      ),
+      column(6, 
+             selectizeInput(
+               "batch_igg_id_column", 
+               "ID Column:", 
+               selected = selected_id %||% NULL, 
+               choices = c(col_names, "NA"),
+               options = list(placeholder = "Select column...")
+             )
       )
     )
   })
@@ -1028,7 +1039,16 @@ function(input, output, session) {
   observeEvent(input$batch_igg_submit_button, {
     req(batch_igg_data())
     
-    withProgress(message = 'Calculating IgG Values...', value = 0, {
+    showModal(modalDialog(
+      title = NULL,
+      div(
+        style = "text-align:center;",
+        tags$h4("Loading"),
+        tags$img(src = "spinner.gif", height = "100px")  # Add spinner.gif to www/
+      ),
+      easyClose = FALSE,
+      footer = NULL
+    ))
       
       df <- batch_igg_data()
       
@@ -1060,19 +1080,18 @@ function(input, output, session) {
           "Upper 50 CI" = upper_50
         )
       
-      
       batch_igg_data_predicted(df_pred)
-    })
+      
+      removeModal()
   })
   
-  # Output predcited values as table
   output$batch_igg_result_ui <- renderUI({
     req(batch_igg_data_predicted())
     
     tagList(
       wellPanel(
         tabsetPanel(
-          tabPanel("Plot",
+          tabPanel("Summary",
                    br(),
                    plotOutput("batch_igg_result_plot")
           ),
@@ -1114,21 +1133,40 @@ function(input, output, session) {
     
   })
   
-  output$batch_igg_result_plot <- renderPlot({
+  plot_data <- eventReactive(input$batch_igg_submit_button, {
     req(batch_igg_data_predicted())
     
-    df <- batch_igg_data_predicted()
+    data <- batch_igg_data_predicted()
     
-    df <- data %>%
-      select(Calf.ID, IgG.Day.1, Day = .data[[input$batch_igg_day_column]]) %>%
-      mutate(
-        IgG.Day.1 = as.numeric(IgG.Day.1),
-        Day = as.numeric(Day)
-      ) %>%
-      filter(!is.na(IgG.Day.1), IgG.Day.1 != 0) %>%
-      group_by(Calf.ID) %>%
-      slice_min(abs(Day - 1), with_ties = FALSE) %>%
-      ungroup() %>%
+    if (input$batch_igg_id_column != "NA") {
+      df <- data %>%
+        select(
+          Calf.ID = .data[[input$batch_igg_id_column]],
+          IgG.Day.1 = `Day 1 IgG (g/L)`,
+          Day = .data[[input$batch_igg_day_column]]
+        ) %>%
+        mutate(
+          IgG.Day.1 = as.numeric(IgG.Day.1),
+          Day = as.numeric(Day)
+        ) %>%
+        filter(!is.na(IgG.Day.1), IgG.Day.1 != 0) %>%
+        group_by(Calf.ID) %>%
+        slice_min(abs(Day - 1), with_ties = FALSE) %>%
+        ungroup()
+    } else {
+      df <- data %>%
+        select(
+          IgG.Day.1 = `Day 1 IgG (g/L)`,
+          Day = .data[[input$batch_igg_day_column]]
+        ) %>%
+        mutate(
+          IgG.Day.1 = as.numeric(IgG.Day.1),
+          Day = as.numeric(Day)
+        ) %>%
+        filter(!is.na(IgG.Day.1), IgG.Day.1 != 0)
+    }
+    
+    df %>%
       mutate(Score = case_when(
         IgG.Day.1 > 25 ~ "Excellent\n(> 25 g/L IgG)",
         IgG.Day.1 >= 18 ~ "Good\n(18 to 24.9 g/L)",
@@ -1145,16 +1183,19 @@ function(input, output, session) {
         )),
         Percent = n / sum(n) * 100
       )
-    df_summary$Score <- factor(df_summary$Score, levels = c("Excellent\n(> 25 g/L IgG)", "Good\n(18 to 24.9 g/L)", "Fair\n(10-17.9 g/L)", "Poor\n(< 10 g/L)"))
+  })
+  
+  output$batch_igg_result_plot <- renderPlot({
+    df <- plot_data()
     
     blue_red_palette <- c(
       "Excellent\n(> 25 g/L IgG)" = "#4facfe",
-      "Good\n(18 to 24.9 g/L)"      = "#90C4FF",
-      "Fair\n(10-17.9 g/L)"      = "#C0DDFF",
-      "Poor\n(< 10 g/L)"      = "#ff5e5e"
+      "Good\n(18 to 24.9 g/L)"    = "#90C4FF",
+      "Fair\n(10-17.9 g/L)"       = "#C0DDFF",
+      "Poor\n(< 10 g/L)"          = "#ff5e5e"
     )
     
-    ggplot(df_summary, aes(x = Score, y = n, fill = Score)) +
+    ggplot(df, aes(x = Score, y = n, fill = Score)) +
       geom_col(width = 0.75) +
       geom_text(aes(label = paste0(round(Percent, 1), "%")),
                 vjust = -0.5, size = 5) +
@@ -1167,8 +1208,8 @@ function(input, output, session) {
       theme_minimal(base_size = 18) +
       theme(legend.position = "none",
             panel.grid.major.x = element_blank())
-    
   })
+  
   
   # Download predicted values
   output$batch_igg_result_download <- downloadHandler(
