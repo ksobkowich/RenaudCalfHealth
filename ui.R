@@ -18,7 +18,8 @@ dashboardPage(
       menuItem("Home", tabName = "home", icon = icon("home")),
       menuItem("Diarrhea", tabName = "diarrhea", icon = icon("poop")),
       menuItem("BRD", tabName = "pneumonia", icon = icon("lungs")),
-      menuItem("Baseline IgG", tabName = "igg", icon = icon("calculator"))
+      menuItem("Baseline IgG", tabName = "igg", icon = icon("calculator")),
+      menuItem("Baseline STP", tabName = "stp", icon = icon("calculator"))
       
     )
   ),
@@ -221,7 +222,7 @@ dashboardPage(
                            tags$label(
                              `for` = "batch_igg_file_in",
                              "Import Herd IgG Values ",
-                             actionButton("show_example_data", label = NULL, icon = icon("question-circle"),
+                             actionButton("show_example_igg_data", label = NULL, icon = icon("question-circle"),
                                           style = "padding: 0 4px; border: none; background: none; vertical-align: middle;")
                            ),
                            fileInput("batch_igg_file_in", label = NULL, accept = c(".csv", ".xlsx", ".xls"))
@@ -233,6 +234,66 @@ dashboardPage(
                 
                 column(7,
                        uiOutput("batch_igg_result_ui")
+                )
+                
+              )
+              
+      ),
+      
+      # STP Tab -----------------------------------------------------------------
+      tabItem(tabName = "stp",
+              h2("Baseline Serum Total Protein (STP) Estimator"),
+              h4("This calculator estimates what a cow’s STP level would have been on day 1, based on a sample collected within 7 days after calving."),
+              fluidRow(
+                
+                column(5,
+                       wellPanel(
+                         
+                         h4("Individual Calculation", style = "text-align: center;"),
+                         fluidRow(
+                           column(4, offset = 1,
+                                  numericInput("single_stp_value", "STP value (g/L)", min = 0, max = 100, value = NULL)
+                           ),
+                           column(4, offset = 1,
+                                  numericInput("single_stp_day", "Days after calving", min = 0, max = 7, step = 1, value = NULL)
+                           ) 
+                         ),
+                         fluidRow(
+                           column(10, offset = 1,
+                             radioButtons(
+                               inputId  = "single_stp_group",
+                               label    = "Colostrum group",
+                               choices  = c("Maternal" = "1", "Replacer" = "2", "Mixed" = "3"),
+                               selected = character(0),
+                               inline   = TRUE
+                             )
+                           )
+                         ),
+                         div(
+                           actionButton("single_stp_submit_button", "Estimate", class = "submit_button"),
+                           style = "text-align: right;"
+                         ),
+                         uiOutput("single_stp_result_ui"),
+                         br(),
+                         hr(),
+                         br(),
+                         h4("Batch Conversion", style = "text-align: center;"),
+                         div(
+                           tags$label(
+                             `for` = "batch_stp_file_in",
+                             "Import Herd STP Values ",
+                             actionButton("show_example_stp_data", label = NULL, icon = icon("question-circle"),
+                                          style = "padding: 0 4px; border: none; background: none; vertical-align: middle;")
+                           ),
+                           fileInput("batch_stp_file_in", label = NULL, accept = c(".csv", ".xlsx", ".xls"))
+                         ),
+                         uiOutput("batch_stp_column_select"),
+                         uiOutput("batch_stp_submit_button_ui")
+                       )
+                ),
+                
+                column(7,
+                       uiOutput("batch_stp_result_ui")
                 )
                 
               )

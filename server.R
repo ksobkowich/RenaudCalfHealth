@@ -806,8 +806,8 @@ function(input, output, session) {
   
   ## Formula for Predicting Day 1 IgG ---------------------------------------
   
-  calculate_day_1_igg <- function(IgG_obs, Day_obs) {
-    #posterior_draws <- posterior::as_draws_df(fit)
+  calculate_day_1_igg <- function(fit, IgG_obs, Day_obs) {
+    posterior_draws <- as_draws_df(fit)
     
     beta_intercept <- posterior_draws$b_Intercept
     beta_day       <- posterior_draws$b_Day
@@ -842,7 +842,7 @@ function(input, output, session) {
   single_igg_result <- reactiveVal(NULL)
   
   observeEvent(input$single_igg_submit_button, {
-    
+
     if (is.null(input$single_igg_value) || is.null(input$single_igg_day) ||
         is.na(input$single_igg_value) || is.na(input$single_igg_day) ||
         !is.numeric(input$single_igg_value) || !is.numeric(input$single_igg_day) ||
@@ -854,6 +854,7 @@ function(input, output, session) {
     } else {
       
       x <- calculate_day_1_igg(
+        fit = igg_model,
         IgG_obs = input$single_igg_value,
         Day_obs = input$single_igg_day
       )
@@ -882,51 +883,68 @@ function(input, output, session) {
     preds <- single_igg_result()
     
     if (is.null(preds) || any(!is.finite(unlist(preds)))) {
-      return(ggplot() + 
-               annotate("text", x = 0, y = 0, label = "Invalid input or calculation failed", size = 5, color = "red") + 
-               theme_void())
+      return(
+        ggplot() +
+          annotate("text", x = 0, y = 0,
+                   label = "Invalid input or calculation failed",
+                   size = 5, color = "red") +
+          theme_void()
+      )
     }
     
-    intervals_df <- tibble(
-      Interval = factor(c("95%", "80%", "50%"), 
+    intervals_df <- tibble::tibble(
+      Interval = factor(c("95%", "80%", "50%"),
                         levels = c("95%", "80%", "50%")),
       lower = c(preds$lower_95, preds$lower_80, preds$lower_50),
       upper = c(preds$upper_95, preds$upper_80, preds$upper_50),
-      y = c(1, 1, 1)
+      y = 1
     )
+    
+    x_vals <- c(
+      preds$median,
+      preds$lower_95, preds$upper_95,
+      preds$lower_80, preds$upper_80,
+      preds$lower_50, preds$upper_50
+    )
+    rng <- range(x_vals, na.rm = TRUE)
+    pad <- diff(rng) * 0.08
+    if (!is.finite(pad) || pad == 0) pad <- 0.2
+    xlim <- c(rng[1] - pad, rng[2] + pad)
+    
+    brks <- scales::pretty_breaks(n = 6)(xlim)
     
     interval_colors <- c("95%" = "#a9d1fe", "80%" = "#4facfe", "50%" = "#2a7bd1")
     
     ggplot(intervals_df) +
-      geom_errorbarh(aes(xmin = lower, xmax = upper, y = y, color = Interval), height = 0, size = 2) +
-      geom_point(data = tibble(x = preds$median, y = 1), aes(x = x, y = y), size = 5, shape = 21, fill = "#fe4f4f", color = "black") +
+      geom_errorbarh(aes(xmin = lower, xmax = upper, y = y, color = Interval),
+                     height = 0, size = 3, lineend = "round") +
+      geom_point(data = tibble::tibble(x = preds$median, y = 1),
+                 aes(x = x, y = y), size = 5, shape = 21,
+                 fill = "#fe4f4f", color = "black") +
+      scale_x_continuous(breaks = brks, limits = xlim, expand = expansion(mult = 0.02)) +
       scale_color_manual(values = interval_colors) +
       theme_minimal() +
       theme(
         axis.title.y = element_blank(),
-        axis.text.y = element_blank(),
+        axis.text.y  = element_blank(),
         axis.ticks.y = element_blank(),
-        axis.title.x = element_blank(),
-        axis.text.x = element_text(size = 10),
         panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         legend.position = "bottom",
         legend.box = "horizontal",
         legend.box.just = "center",
         legend.text = element_text(size = 12),
+        legend.title = element_blank(),
         legend.key.size = unit(1.2, "lines"),
-        plot.caption = element_text(hjust = 0.5, size = 12, face = "bold", color = "#444444", margin = margin(t = 5))
+        plot.caption = element_text(hjust = 0.5, size = 12, face = "bold",
+                                    color = "#444444", margin = margin(t = 5))
       ) +
-      guides(color = guide_legend(nrow = 1, byrow = TRUE, title = NULL)) +   # no title
-      labs(caption = "Prediction Interval") +
-      coord_cartesian(ylim = c(0.94, 1.05))
-    
-    
+      labs(x = "Estimated Day-1 IgG (g/L)", y = NULL, caption = "Prediction Interval")
   })
   
   ## Batch Calculations -----------------------------------------------------
   # Help text
-  observeEvent(input$show_example_data, {
+  observeEvent(input$show_example_igg_data, {
     showModal(
       modalDialog(
         title = "Example Data Layout & Guidelines",
@@ -943,7 +961,7 @@ function(input, output, session) {
           
           br(),
           h4("Example Table"),
-          tableOutput("batch_example_table")
+          tableOutput("batch_example_igg_table")
         ),
         easyClose = TRUE,
         footer = modalButton("Close")
@@ -952,7 +970,7 @@ function(input, output, session) {
   })
   
   # Sample Data
-  output$batch_example_table <- renderTable({
+  output$batch_example_igg_table <- renderTable({
     df <- data.frame(
       "Calf ID" = c("Calf001", "Calf002", "Calf003"),
       "IgG value (g/L)" = c(23.4, 19.8, 15.2),
@@ -996,11 +1014,9 @@ function(input, output, session) {
     
     igg_matches <- c("igg", "igg value", "igg_value", "igg (g/l)")
     day_matches <- c("day", "days", "day sample taken", "sample day")
-    id_matches <- c("id", "number", "calf", "cow")
     
     selected_igg <- col_names[which(tolower(col_names) %in% tolower(igg_matches))[1]]
     selected_day <- col_names[which(tolower(col_names) %in% tolower(day_matches))[1]]
-    selected_id <- col_names[which(tolower(col_names) %in% tolower(id_matches))[1]]
     
     fluidRow(
       column(6,
@@ -1020,15 +1036,6 @@ function(input, output, session) {
                choices = col_names,
                options = list(placeholder = "Select column...")
              )
-      ),
-      column(6, 
-             selectizeInput(
-               "batch_igg_id_column", 
-               "ID Column:", 
-               selected = selected_id %||% NULL, 
-               choices = c(col_names, "NA"),
-               options = list(placeholder = "Select column...")
-             )
       )
     )
   })
@@ -1039,71 +1046,49 @@ function(input, output, session) {
   observeEvent(input$batch_igg_submit_button, {
     req(batch_igg_data())
     
-    showModal(modalDialog(
-      title = NULL,
-      div(
-        style = "text-align:center;",
-        tags$h4("Loading"),
-        tags$img(src = "spinner.gif", height = "100px")  # Add spinner.gif to www/
-      ),
-      easyClose = FALSE,
-      footer = NULL
-    ))
-      
-      df <- batch_igg_data()
-      
-      df_pred <- df %>%
-        mutate(
-          IgG_obs = as.numeric(.data[[input$batch_igg_value_column]]),
-          Day_obs = as.numeric(.data[[input$batch_igg_day_column]])
-        ) %>%
-        # Filter out invalid values
-        filter(IgG_obs > 0, Day_obs > 1, Day_obs < 7) %>%
-        rowwise() %>%
-        mutate(pred = list(calculate_day_1_igg(
-          IgG_obs = IgG_obs,
-          Day_obs = Day_obs
-        ))) %>%
-        unnest_wider(pred) %>%
-        ungroup() %>%
-        mutate(across(
-          c(median, lower_95, upper_95, lower_80, upper_80, lower_50, upper_50),
-          ~ round(.x, 1)
-        )) %>%
-        rename(
-          "Day 1 IgG (g/L)" = median,
-          "Lower 95 CI" = lower_95,
-          "Upper 95 CI" = upper_95,
-          "Lower 80 CI" = lower_80,
-          "Upper 80 CI" = upper_80,
-          "Lower 50 CI" = lower_50,
-          "Upper 50 CI" = upper_50
-        )
-      
-      batch_igg_data_predicted(df_pred)
-      
-      removeModal()
+    withProgress(message = 'Calculating IgG Values...', value = 0, {
+    
+    df <- batch_igg_data()
+    fit <- igg_model
+    
+    df_pred <- df %>%
+      rowwise() %>%
+      mutate(pred = list(calculate_day_1_igg(
+        fit = fit,
+        IgG_obs = cur_data()[[input$batch_igg_value_column]],
+        Day_obs = cur_data()[[input$batch_igg_day_column]]
+      ))) %>%
+      unnest_wider(pred) %>%
+      ungroup() %>%
+      mutate(across(
+        c(median, lower_95, upper_95, lower_80, upper_80, lower_50, upper_50),
+        ~ round(.x, 1)
+      )) %>%
+      rename(
+        "Day 1 IgG (g/L)" = median,
+        "Lower 95 CI" = lower_95,
+        "Upper 95 CI" = upper_95,
+        "Lower 80 CI" = lower_80,
+        "Upper 80 CI" = upper_80,
+        "Lower 50 CI" = lower_50,
+        "Upper 50 CI" = upper_50
+      )
+    
+    batch_igg_data_predicted(df_pred)
+    })
   })
   
+  # Output predcited values as table
   output$batch_igg_result_ui <- renderUI({
     req(batch_igg_data_predicted())
     
     tagList(
       wellPanel(
-        tabsetPanel(
-          tabPanel("Summary",
-                   br(),
-                   plotOutput("batch_igg_result_plot")
-          ),
-          tabPanel("Table",
-                   br(),
-                   DTOutput("batch_igg_result_table"),
-                   br(),
-                   div(
-                     downloadButton("batch_igg_result_download", "Download", class = "submit_button"),
-                     style = "text-align: right;"
-                   )
-          )
+        DTOutput("batch_igg_result_table"),
+        br(),
+        div(
+          downloadButton("batch_igg_result_download", "Download", class = "submit_button"),
+          style = "text-align: right;"
         )
       )
     )
@@ -1133,84 +1118,6 @@ function(input, output, session) {
     
   })
   
-  plot_data <- eventReactive(input$batch_igg_submit_button, {
-    req(batch_igg_data_predicted())
-    
-    data <- batch_igg_data_predicted()
-    
-    if (input$batch_igg_id_column != "NA") {
-      df <- data %>%
-        select(
-          Calf.ID = .data[[input$batch_igg_id_column]],
-          IgG.Day.1 = `Day 1 IgG (g/L)`,
-          Day = .data[[input$batch_igg_day_column]]
-        ) %>%
-        mutate(
-          IgG.Day.1 = as.numeric(IgG.Day.1),
-          Day = as.numeric(Day)
-        ) %>%
-        filter(!is.na(IgG.Day.1), IgG.Day.1 != 0) %>%
-        group_by(Calf.ID) %>%
-        slice_min(abs(Day - 1), with_ties = FALSE) %>%
-        ungroup()
-    } else {
-      df <- data %>%
-        select(
-          IgG.Day.1 = `Day 1 IgG (g/L)`,
-          Day = .data[[input$batch_igg_day_column]]
-        ) %>%
-        mutate(
-          IgG.Day.1 = as.numeric(IgG.Day.1),
-          Day = as.numeric(Day)
-        ) %>%
-        filter(!is.na(IgG.Day.1), IgG.Day.1 != 0)
-    }
-    
-    df %>%
-      mutate(Score = case_when(
-        IgG.Day.1 > 25 ~ "Excellent\n(> 25 g/L IgG)",
-        IgG.Day.1 >= 18 ~ "Good\n(18 to 24.9 g/L)",
-        IgG.Day.1 >= 10 ~ "Fair\n(10-17.9 g/L)",
-        TRUE ~ "Poor\n(< 10 g/L)"
-      )) %>%
-      count(Score) %>%
-      mutate(
-        Score = factor(Score, levels = c(
-          "Excellent\n(> 25 g/L IgG)",
-          "Good\n(18 to 24.9 g/L)",
-          "Fair\n(10-17.9 g/L)",
-          "Poor\n(< 10 g/L)"
-        )),
-        Percent = n / sum(n) * 100
-      )
-  })
-  
-  output$batch_igg_result_plot <- renderPlot({
-    df <- plot_data()
-    
-    blue_red_palette <- c(
-      "Excellent\n(> 25 g/L IgG)" = "#4facfe",
-      "Good\n(18 to 24.9 g/L)"    = "#90C4FF",
-      "Fair\n(10-17.9 g/L)"       = "#C0DDFF",
-      "Poor\n(< 10 g/L)"          = "#ff5e5e"
-    )
-    
-    ggplot(df, aes(x = Score, y = n, fill = Score)) +
-      geom_col(width = 0.75) +
-      geom_text(aes(label = paste0(round(Percent, 1), "%")),
-                vjust = -0.5, size = 5) +
-      scale_fill_manual(values = blue_red_palette) +
-      labs(
-        title = "",
-        x = "Estimated Day 1 IgG",
-        y = "Number of Calves"
-      ) +
-      theme_minimal(base_size = 18) +
-      theme(legend.position = "none",
-            panel.grid.major.x = element_blank())
-  })
-  
-  
   # Download predicted values
   output$batch_igg_result_download <- downloadHandler(
     filename = function() {
@@ -1220,6 +1127,319 @@ function(input, output, session) {
       req(batch_igg_data_predicted())
       write.csv(batch_igg_data_predicted(), file, row.names = FALSE)
     }
+  )
+  
+  # STP Tab ---------------------------------------------------------------------
+  
+  .valid_group <- function(x) {
+    out <- suppressWarnings(as.integer(x))
+    ok  <- out %in% c(1L,2L,3L)
+    ifelse(ok, as.character(out), NA_character_)
+  }
+  
+  # ---- Single Calculation ------------------------------------------------------
+  single_stp_result <- reactiveVal(NULL)
+  
+  observeEvent(input$single_stp_submit_button, {
+    if (is.null(input$single_stp_value) || is.null(input$single_stp_day) || is.null(input$single_stp_group) ||
+        is.na(input$single_stp_value)   || is.na(input$single_stp_day)   || is.na(input$single_stp_group)   ||
+        !is.numeric(input$single_stp_value) || !is.numeric(input$single_stp_day) ||
+        input$single_stp_day < 1 || input$single_stp_day > 7 ||
+        input$single_stp_value <= 0 ||
+        is.na(.valid_group(input$single_stp_group))) {
+      
+      single_stp_result(NULL)
+      showNotification("Please enter a valid STP value (>0), Day between 1 and 7, and a Colostrum group (1, 2, or 3).",
+                       type = "error", duration = 5)
+      
+    } else {
+      preds <- back_predict_day1(
+        model       = stp_gam,
+        day         = input$single_stp_day,
+        colostrum   = .valid_group(input$single_stp_group),
+        stp_measure = input$single_stp_value
+      )
+      single_stp_result(preds)
+    }
+  })
+  
+  output$single_stp_result_ui <- renderUI({
+    out <- single_stp_result()
+    req(!is.null(out), nrow(out) == 1)
+    
+    center_val <- out$STP_day1_pred[1]
+    center_lab <- sprintf("%.2f", center_val)
+    
+    tagList(
+      h4(
+        "Est. Day 1 STP: ",
+        span(center_lab, style = "display: inline; font-weight: 500; color: #4facfe"),
+        style = "font-weight: 400; text-align: center;"
+      ),
+      plotOutput("single_stp_plot", height = "120px")
+    )
+  })
+  
+  output$single_stp_plot <- renderPlot({
+    preds <- single_stp_result()
+    req(!is.null(preds))
+    
+    has50 <- all(c("PI50_low","PI50_high") %in% names(preds))
+    has95 <- all(c("PI95_low","PI95_high") %in% names(preds))
+
+    if (!has95 && all(c("PI_low_95","PI_high_95") %in% names(preds))) {
+      preds$PI95_low  <- preds$PI_low_95
+      preds$PI95_high <- preds$PI_high_95
+      has95 <- TRUE
+    }
+    
+    center <- preds$STP_day1_pred[1]
+    
+    intervals_df <- dplyr::bind_rows(
+      if (has95) tibble::tibble(Interval = factor("95%", levels = c("95%","50%")),
+                                lower = preds$PI95_low[1], upper = preds$PI95_high[1], y = 1) else NULL,
+      if (has50) tibble::tibble(Interval = factor("50%", levels = c("95%","50%")),
+                                lower = preds$PI50_low[1], upper = preds$PI50_high[1], y = 1) else NULL
+    )
+    
+    x_vals <- c(center,
+                if (has95) c(preds$PI95_low[1], preds$PI95_high[1]),
+                if (has50) c(preds$PI50_low[1], preds$PI50_high[1]))
+    rng <- range(x_vals, na.rm = TRUE)
+    pad <- diff(rng) * 0.08
+    if (!is.finite(pad) || pad == 0) pad <- 0.2
+    xlim <- c(rng[1] - pad, rng[2] + pad)
+    
+    brks <- scales::pretty_breaks(n = 6)(xlim)
+    
+    interval_colors <- c("95%" = "#a9d1fe", "50%" = "#2a7bd1")
+    
+    ggplot(intervals_df) +
+      geom_errorbarh(aes(xmin = lower, xmax = upper, y = y, color = Interval),
+                     height = 0, size = 3, lineend = "round") +
+      geom_point(aes(x = center, y = 1),
+                 size = 5, shape = 21, fill = "#fe4f4f", color = "black") +
+      scale_x_continuous(breaks = brks, limits = xlim, expand = expansion(mult = 0.02)) +
+      scale_color_manual(values = interval_colors, drop = FALSE) +
+      labs(x = "Estimated Day-1 STP", y = NULL, caption = "Prediction Interval") +
+      theme_minimal() +
+      theme(
+        axis.title.y = element_blank(),
+        axis.text.y  = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        legend.position = "bottom",
+        legend.box = "horizontal",
+        legend.title = element_blank(),
+        legend.text  = element_text(size = 12),
+        plot.caption = element_text(hjust = 0.5, size = 12, face = "bold", color = "#444")
+      )
+  })
+  
+  # ---- Batch Calculations ------------------------------------------------------
+  observeEvent(input$show_example_stp_data, {
+    showModal(
+      modalDialog(
+        title = "Example Data Layout & Guidelines",
+        size = "m",
+        tags$div(
+          h3("Accepted File Formats"),
+          p("We accept Excel files (.xls, .xlsx) and comma-separated values (.csv). Please ensure your file is saved in one of these formats."),
+          
+          h3("Data Structure Requirements"),
+          p("Your data table should be organized so that each STP observation occupies its own row."),
+          p("Each STP value must have a corresponding column indicating the number of days after calving when the sample was taken."),
+          p("Column headers do not have to follow a specific naming convention, as you will be prompted to identify which columns correspond to the STP values and sample days during import."),
+          p("After processing, your data will be returned with an additional column displaying the estimated STP value one day after calving."),
+          p("Colostrum groups are coded as follows: 1) Maternal, 2) Replacer, 3) Mixed."),
+          
+          br(),
+          h4("Example Table"),
+          tableOutput("batch_example_stp_table")
+        ),
+        easyClose = TRUE,
+        footer = modalButton("Close")
+      )
+    )
+  })
+  
+  # Sample Data
+  output$batch_example_stp_table <- renderTable({
+    df <- data.frame(
+      "Calf ID" = c("Calf001", "Calf002", "Calf003"),
+      "STP value (g/L)" = c(5.4, 4.2, 4.8),
+      "Days after calving" = as.integer(c(3, 4, 2)),
+      "Colostrum" = as.integer(c(1, 3, 1)),
+      check.names = FALSE
+    )
+    df
+  }, striped = TRUE, bordered = TRUE, width = "100%")
+  
+  batch_stp_data <- reactive({
+    req(input$batch_stp_file_in)
+    
+    file <- input$batch_stp_file_in$datapath
+    ext <- tools::file_ext(file)
+    
+    if (ext == "csv") {
+      read.csv(file)
+    } else if (ext %in% c("xls", "xlsx")) {
+      readxl::read_excel(file)
+    } else {
+      showNotification("Invalid file type", type = "error")
+      return(NULL)
+    }
+  })
+  
+  # Column select UI
+  output$batch_stp_column_select <- renderUI({
+    req(batch_stp_data())
+    col_names <- colnames(batch_stp_data())
+    
+    stp_matches  <- c("stp", "stp value", "stp_value")
+    day_matches  <- c("day", "days", "day sample taken", "sample day")
+    grp_matches  <- c("colostrum", "group", "colostrum group")
+    
+    sel_stp <- col_names[which(tolower(col_names) %in% tolower(stp_matches))[1]]
+    sel_day <- col_names[which(tolower(col_names) %in% tolower(day_matches))[1]]
+    sel_grp <- col_names[which(tolower(col_names) %in% tolower(grp_matches))[1]]
+    
+    fluidRow(
+      column(4,
+             selectizeInput("batch_stp_value_column", "STP Column:",
+                            selected = sel_stp %||% NULL, choices = col_names,
+                            options = list(placeholder = "Select column...")
+             )
+      ),
+      column(4,
+             selectizeInput("batch_stp_day_column", "Day Column:",
+                            selected = sel_day %||% NULL, choices = col_names,
+                            options = list(placeholder = "Select column...")
+             )
+      ),
+      column(4,
+             selectizeInput("batch_stp_group_column", "Colostrum Column:",
+                            selected = sel_grp %||% NULL, choices = col_names,
+                            options = list(placeholder = "Select column...")
+             )
+      )
+    )
+  })
+  
+  output$batch_stp_submit_button_ui <- renderUI({
+    if (is.null(batch_stp_data())) return(NULL)
+    div(
+      actionButton("batch_stp_submit_button", "Estimate", class = "submit_button"),
+      style = "text-align: right;"
+    )
+  })
+  
+  batch_stp_data_predicted <- reactiveVal(NULL)
+  
+  observeEvent(input$batch_stp_submit_button, {
+    req(batch_stp_data(), input$batch_stp_value_column, input$batch_stp_day_column, input$batch_stp_group_column)
+    
+    df <- batch_stp_data()
+    if (any(!is.finite(suppressWarnings(as.numeric(df[[input$batch_stp_value_column]]))))) {
+      showNotification("STP column has non-numeric values.", type = "error"); return(NULL)
+    }
+    if (any(!is.finite(suppressWarnings(as.numeric(df[[input$batch_stp_day_column]]))))) {
+      showNotification("Day column has non-numeric values.", type = "error"); return(NULL)
+    }
+    
+    withProgress(message = 'Calculating STP Day-1...', value = 0, {
+      day_vec   <- as.numeric(df[[input$batch_stp_day_column]])
+      stp_vec   <- as.numeric(df[[input$batch_stp_value_column]])
+      group_vec <- .valid_group(df[[input$batch_stp_group_column]])
+      
+      ok <- is.finite(day_vec) & day_vec >= 1 & day_vec <= 7 &
+        is.finite(stp_vec) & stp_vec > 0 &
+        !is.na(group_vec)
+      
+      if (!all(ok)) {
+        bad_n <- sum(!ok)
+        showNotification(paste0("Skipping ", bad_n, " invalid rows (check STP>0, Day 1–7, Colostrum 1/2/3)."),
+                         type = "warning", duration = 6)
+      }
+      
+      preds <- back_predict_day_1_safe <- tryCatch({
+        back_predict_day1(
+          model       = stp_gam,
+          day         = day_vec[ok],
+          colostrum   = group_vec[ok],
+          stp_measure = stp_vec[ok]
+        )
+      }, error = function(e) {
+        showNotification(paste("Prediction failed:", e$message), type = "error", duration = 6)
+        return(NULL)
+      })
+      req(!is.null(preds))
+      
+      out <- df
+      if (!all(c("PI95_low","PI95_high") %in% names(preds)) &&
+          all(c("PI_low_95","PI_high_95") %in% names(preds))) {
+        preds <- preds %>%
+          dplyr::rename(PI95_low = PI_low_95, PI95_high = PI_high_95)
+      }
+      has50 <- all(c("PI50_low","PI50_high") %in% names(preds))
+      
+      out$`Day 1 STP`    <- NA_real_
+      out$`Lower 95 PI`  <- NA_real_
+      out$`Upper 95 PI`  <- NA_real_
+      if (has50) {
+        out$`Lower 50 PI` <- NA_real_
+        out$`Upper 50 PI` <- NA_real_
+      }
+      
+      out$`Day 1 STP`[ok]   <- round(preds$STP_day1_pred, 2)
+      out$`Lower 95 PI`[ok] <- round(preds$PI95_low, 2)
+      out$`Upper 95 PI`[ok] <- round(preds$PI95_high, 2)
+      if (has50) {
+        out$`Lower 50 PI`[ok] <- round(preds$PI50_low, 2)
+        out$`Upper 50 PI`[ok] <- round(preds$PI50_high, 2)
+      }
+      
+      batch_stp_data_predicted(out)
+    })
+  })
+  
+  # Output predicted values as table
+  output$batch_stp_result_ui <- renderUI({
+    req(batch_stp_data_predicted())
+    tagList(
+      wellPanel(
+        DTOutput("batch_stp_result_table"),
+        br(),
+        div(
+          downloadButton("batch_stp_result_download", "Download", class = "submit_button"),
+          style = "text-align: right;"
+        )
+      )
+    )
+  })
+  
+  output$batch_stp_result_table <- renderDT({
+    req(batch_stp_data_predicted())
+    df <- batch_stp_data_predicted()
+    preferred <- c("Day 1 STP","Lower 95 PI","Upper 95 PI","Lower 50 PI","Upper 50 PI")
+    show_cols <- c(intersect(preferred, names(df)), setdiff(names(df), preferred))
+    df <- df[, show_cols, drop = FALSE]
+    
+    datatable(
+      df,
+      rownames = FALSE,
+      options = list(dom = 'tip', ordering = TRUE, scrollX = TRUE),
+      selection = "none",
+      escape = FALSE
+    ) %>%
+      formatStyle("Day 1 STP", color = "#4facfe", fontWeight = "bold")
+  })
+  
+  # Download predicted values
+  output$batch_stp_result_download <- downloadHandler(
+    filename = function() paste0("batch_stp_results_", Sys.Date(), ".csv"),
+    content  = function(file) write.csv(batch_stp_data_predicted(), file, row.names = FALSE)
   )
   
 }

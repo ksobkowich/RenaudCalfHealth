@@ -12,6 +12,7 @@ library(purrr)
 library(posterior)
 library(ggplot2)
 library(tidyr)
+library(rstan)
 
 source("./functions.R")
 
@@ -51,6 +52,8 @@ long_pna <- setNames(pna_values$long_value, pna_values$short_name)
 
 
 # IgG Model ---------------------------------------------------------------
-#igg_model <- readRDS("data/fit_igg_model.rds")
-posterior_draws <- readRDS("data/igg_model_draws.rds")
+igg_model <- readRDS("data/fit_igg_model.rds")
 
+# STP Model ---------------------------------------------------------------
+stp_gam <- readRDS("data/fit_stp_model.rds")
+STP_GROUP_LEVELS <- c("1","2","3")
