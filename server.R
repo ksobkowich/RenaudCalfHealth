@@ -1186,7 +1186,7 @@ function(input, output, session) {
     
     has50 <- all(c("PI50_low","PI50_high") %in% names(preds))
     has95 <- all(c("PI95_low","PI95_high") %in% names(preds))
-
+    
     if (!has95 && all(c("PI_low_95","PI_high_95") %in% names(preds))) {
       preds$PI95_low  <- preds$PI_low_95
       preds$PI95_high <- preds$PI_high_95
@@ -1196,11 +1196,17 @@ function(input, output, session) {
     center <- preds$STP_day1_pred[1]
     
     intervals_df <- dplyr::bind_rows(
-      if (has95) tibble::tibble(Interval = factor("95%", levels = c("95%","50%")),
-                                lower = preds$PI95_low[1], upper = preds$PI95_high[1], y = 1) else NULL,
-      if (has50) tibble::tibble(Interval = factor("50%", levels = c("95%","50%")),
-                                lower = preds$PI50_low[1], upper = preds$PI50_high[1], y = 1) else NULL
+      if (has95) tibble::tibble(
+        Interval = factor("95%", levels = c("95%","50%")),
+        lower = preds$PI95_low[1], upper = preds$PI95_high[1], y = 1
+      ) else NULL,
+      if (has50) tibble::tibble(
+        Interval = factor("50%", levels = c("95%","50%")),
+        lower = preds$PI50_low[1], upper = preds$PI50_high[1], y = 1
+      ) else NULL
     )
+    
+    req(!is.null(intervals_df), nrow(intervals_df) > 0)
     
     x_vals <- c(center,
                 if (has95) c(preds$PI95_low[1], preds$PI95_high[1]),
@@ -1215,12 +1221,14 @@ function(input, output, session) {
     interval_colors <- c("95%" = "#a9d1fe", "50%" = "#2a7bd1")
     
     ggplot(intervals_df) +
-      geom_errorbarh(aes(xmin = lower, xmax = upper, y = y, color = Interval),
-                     height = 0, size = 3, lineend = "round") +
-      geom_point(aes(x = center, y = 1),
-                 size = 5, shape = 21, fill = "#fe4f4f", color = "black") +
+      geom_errorbarh(
+        aes(xmin = lower, xmax = upper, y = y, color = Interval),
+        height = 0, linewidth = 3, lineend = "round"
+      ) +
+      annotate("point", x = center, y = 1, size = 5, shape = 21,
+               fill = "#fe4f4f", color = "black") +
       scale_x_continuous(breaks = brks, limits = xlim, expand = expansion(mult = 0.02)) +
-      scale_color_manual(values = interval_colors, drop = FALSE) +
+      scale_color_manual(values = interval_colors, limits = c("95%","50%"), drop = FALSE) +
       labs(x = "Estimated Day-1 STP", y = NULL, caption = "Prediction Interval") +
       theme_minimal() +
       theme(
@@ -1233,9 +1241,10 @@ function(input, output, session) {
         legend.box = "horizontal",
         legend.title = element_blank(),
         legend.text  = element_text(size = 12),
-        plot.caption = element_text(hjust = 0.5, size = 12, face = "bold", color = "#444")
+        plot.caption = element_text(hjust = 0.5, size = 12, face = "bold", color = "#444444")
       )
   })
+  
   
   # ---- Batch Calculations ------------------------------------------------------
   observeEvent(input$show_example_stp_data, {
