@@ -26,6 +26,25 @@ add_totals <- function(vec, general) {
   return(vec)
 }
 
+# IgG Model Calculations
+predict_day1_igg <- function(fit, IgG_obs, Day_obs) {
+  b <- fixef(fit)
+  slope <- b["d"]
+  sigma <- sigma(fit)
+  
+  igg_day1 <- exp(log(IgG_obs) - slope * (Day_obs - 1))
+  
+  tibble::tibble(
+    median   = igg_day1,
+    lower_95 = igg_day1 * exp(-1.96 * sigma),
+    upper_95 = igg_day1 * exp( 1.96 * sigma),
+    lower_80 = igg_day1 * exp(-1.28 * sigma),
+    upper_80 = igg_day1 * exp( 1.28 * sigma),
+    lower_50 = igg_day1 * exp(-0.674 * sigma),
+    upper_50 = igg_day1 * exp( 0.674 * sigma)
+  )
+}
+
 # STP model calculations
 back_predict_day1 <- function(model,
                               day,

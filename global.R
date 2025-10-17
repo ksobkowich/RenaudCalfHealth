@@ -9,10 +9,9 @@ library(shinyBS)
 library(googlesheets4)
 library(dplyr)
 library(purrr)
-library(posterior)
 library(ggplot2)
 library(tidyr)
-library(rstan)
+library(lme4)
 
 source("./functions.R")
 
@@ -50,9 +49,8 @@ pna_values <- pna_values %>% filter(!is.na(short_name))
 short_pna <- setNames(pna_values$short_value, pna_values$short_name)
 long_pna <- setNames(pna_values$long_value, pna_values$short_name)
 
-
 # IgG Model ---------------------------------------------------------------
-igg_model <- readRDS("data/fit_igg_model.rds")
+igg_model <- readRDS("data/simple_igg_decay_model.rds")
 
 # STP Model ---------------------------------------------------------------
 stp_gam <- readRDS("data/fit_stp_model.rds")

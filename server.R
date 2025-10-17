@@ -801,78 +801,42 @@ function(input, output, session) {
   })
   
   
-  # IgG Tab -----------------------------------------------------------------
+  # -------------------------------------------------------------------------
+  # IgG Tab  (Frequentist version — using pre-fitted lmer model)
+  # -------------------------------------------------------------------------
   
-  
-  ## Formula for Predicting Day 1 IgG ---------------------------------------
-  
-  calculate_day_1_igg <- function(fit, IgG_obs, Day_obs) {
-    posterior_draws <- as_draws_df(fit)
-    
-    beta_intercept <- posterior_draws$b_Intercept
-    beta_day       <- posterior_draws$b_Day
-    sigma          <- posterior_draws$sigma
-    sd_intercept   <- posterior_draws$sd_CalfID__Intercept
-    sd_slope       <- posterior_draws$sd_CalfID__Day
-    
-    n_draws <- length(beta_intercept)
-    
-    re_intercept <- rnorm(n_draws, 0, sd_intercept)
-    re_slope     <- rnorm(n_draws, 0, sd_slope)
-    
-    log_IgG_pred <- beta_intercept + re_intercept +
-      (beta_day + re_slope) * 1 + 
-      rnorm(n_draws, 0, sigma) + 
-      (log(IgG_obs) - (beta_intercept + beta_day * Day_obs))
-    
-    IgG_pred <- exp(log_IgG_pred)
-    
-    tibble(
-      median = median(IgG_pred),
-      lower_95 = quantile(IgG_pred, 0.025),
-      upper_95 = quantile(IgG_pred, 0.975),
-      lower_80 = quantile(IgG_pred, 0.10),
-      upper_80 = quantile(IgG_pred, 0.90),
-      lower_50 = quantile(IgG_pred, 0.25),
-      upper_50 = quantile(IgG_pred, 0.75)
-    )
-  }
-  
-  ## Single Calculation -----------------------------------------------------
+  ## --- Single Calculation -------------------------------------------------
   single_igg_result <- reactiveVal(NULL)
   
   observeEvent(input$single_igg_submit_button, {
-
     if (is.null(input$single_igg_value) || is.null(input$single_igg_day) ||
         is.na(input$single_igg_value) || is.na(input$single_igg_day) ||
         !is.numeric(input$single_igg_value) || !is.numeric(input$single_igg_day) ||
         input$single_igg_day < 1 || input$single_igg_day > 7 || input$single_igg_value <= 0) {
       
       single_igg_result(NULL)
-      showNotification("Please enter a valid IgG value (>0) and Day between 1 and 7.", type = "error", duration = 5)
+      showNotification("Please enter a valid IgG value (>0) and Day between 1 and 7.",
+                       type = "error", duration = 5)
       
     } else {
-      
-      x <- calculate_day_1_igg(
+      x <- predict_day1_igg(
         fit = igg_model,
         IgG_obs = input$single_igg_value,
         Day_obs = input$single_igg_day
       )
       single_igg_result(x)
     }
-    
   })
   
   output$single_igg_result_ui <- renderUI({
     output_value <- single_igg_result()
-    
     req(!is.null(output_value))
-    req(!is.na(output_value))
     
     tagList(
       h4(
         "Est. IgG on Day 1: ",  
-        span(paste(round(output_value$median, 1), "g/L"), style = "display: inline; font-weight: 500; color: #4facfe"),
+        span(paste(round(output_value$median, 1), "g/L"),
+             style = "display: inline; font-weight: 500; color: #4facfe"),
         style = "font-weight: 400; text-align: center;"
       ),
       plotOutput("single_igg_plot", height = "120px")
@@ -881,7 +845,6 @@ function(input, output, session) {
   
   output$single_igg_plot <- renderPlot({
     preds <- single_igg_result()
-    
     if (is.null(preds) || any(!is.finite(unlist(preds)))) {
       return(
         ggplot() +
@@ -900,20 +863,14 @@ function(input, output, session) {
       y = 1
     )
     
-    x_vals <- c(
-      preds$median,
-      preds$lower_95, preds$upper_95,
-      preds$lower_80, preds$upper_80,
-      preds$lower_50, preds$upper_50
-    )
+    x_vals <- c(preds$median, preds$lower_95, preds$upper_95,
+                preds$lower_80, preds$upper_80,
+                preds$lower_50, preds$upper_50)
     rng <- range(x_vals, na.rm = TRUE)
     pad <- diff(rng) * 0.08
     if (!is.finite(pad) || pad == 0) pad <- 0.2
     xlim <- c(rng[1] - pad, rng[2] + pad)
-    
     brks <- scales::pretty_breaks(n = 6)(xlim)
-    
-    interval_colors <- c("95%" = "#a9d1fe", "80%" = "#4facfe", "50%" = "#2a7bd1")
     
     ggplot(intervals_df) +
       geom_errorbarh(aes(xmin = lower, xmax = upper, y = y, color = Interval),
@@ -922,7 +879,9 @@ function(input, output, session) {
                  aes(x = x, y = y), size = 5, shape = 21,
                  fill = "#fe4f4f", color = "black") +
       scale_x_continuous(breaks = brks, limits = xlim, expand = expansion(mult = 0.02)) +
-      scale_color_manual(values = interval_colors) +
+      scale_color_manual(values = c("95%" = "#a9d1fe",
+                                    "80%" = "#4facfe",
+                                    "50%" = "#2a7bd1")) +
       theme_minimal() +
       theme(
         axis.title.y = element_blank(),
@@ -942,8 +901,7 @@ function(input, output, session) {
       labs(x = "Estimated Day-1 IgG (g/L)", y = NULL, caption = "Prediction Interval")
   })
   
-  ## Batch Calculations -----------------------------------------------------
-  # Help text
+  ## --- Batch Calculations -------------------------------------------------
   observeEvent(input$show_example_igg_data, {
     showModal(
       modalDialog(
@@ -951,14 +909,10 @@ function(input, output, session) {
         size = "m",
         tags$div(
           h3("Accepted File Formats"),
-          p("We accept Excel files (.xls, .xlsx) and comma-separated values (.csv). Please ensure your file is saved in one of these formats."),
-          
+          p("We accept Excel (.xls, .xlsx) and CSV files."),
           h3("Data Structure Requirements"),
-          p("Your data table should be organized so that each IgG observation occupies its own row. "),
-          p("Each IgG value must have a corresponding column indicating the number of days after calving when the sample was taken."),
-          p("Column headers do not have to follow a specific naming convention, as you will be prompted to identify which columns correspond to the IgG values and sample days during import."),
-          p("After processing, your data will be returned with an additional column displaying the estimated IgG value one day after calving."),
-          
+          p("Each IgG observation should occupy its own row."),
+          p("Each IgG value must have a corresponding column for sampling day."),
           br(),
           h4("Example Table"),
           tableOutput("batch_example_igg_table")
@@ -969,125 +923,94 @@ function(input, output, session) {
     )
   })
   
-  # Sample Data
   output$batch_example_igg_table <- renderTable({
-    df <- data.frame(
+    data.frame(
       "Calf ID" = c("Calf001", "Calf002", "Calf003"),
       "IgG value (g/L)" = c(23.4, 19.8, 15.2),
       "Days after calving" = as.integer(c(2, 3, 1)),
       check.names = FALSE
     )
-    df
   }, striped = TRUE, bordered = TRUE, width = "100%")
   
   batch_igg_data <- reactive({
     req(input$batch_igg_file_in)
-    
     file <- input$batch_igg_file_in$datapath
     ext <- tools::file_ext(file)
-    
-    if (ext == "csv") {
-      read.csv(file)
-    } else if (ext %in% c("xls", "xlsx")) {
-      readxl::read_excel(file)
-    } else {
+    if (ext == "csv") read.csv(file)
+    else if (ext %in% c("xls","xlsx")) readxl::read_excel(file)
+    else {
       showNotification("Invalid file type", type = "error")
       return(NULL)
     }
   })
   
-  # Conditional submit button
   output$batch_igg_submit_button_ui <- renderUI({
     if (is.null(batch_igg_data())) return(NULL)
-    
     div(
       actionButton("batch_igg_submit_button", "Estimate", class = "submit_button"),
       style = "text-align: right;"
     )
   })
   
-  # Column name select UI
   output$batch_igg_column_select <- renderUI({
     if (is.null(batch_igg_data())) return(NULL)
-    
     col_names <- colnames(batch_igg_data())
-    
-    igg_matches <- c("igg", "igg value", "igg_value", "igg (g/l)")
-    day_matches <- c("day", "days", "day sample taken", "sample day")
-    
+    igg_matches <- c("igg","igg value","igg_value","igg (g/l)")
+    day_matches <- c("day","days","day sample taken","sample day")
     selected_igg <- col_names[which(tolower(col_names) %in% tolower(igg_matches))[1]]
     selected_day <- col_names[which(tolower(col_names) %in% tolower(day_matches))[1]]
-    
     fluidRow(
       column(6,
-             selectizeInput(
-               "batch_igg_value_column", 
-               "IgG Column:", 
-               selected = selected_igg %||% NULL, 
-               choices = col_names,
-               options = list(placeholder = "Select column...")
-             )
-      ),
+             selectizeInput("batch_igg_value_column","IgG Column:",
+                            selected = selected_igg %||% NULL,
+                            choices = col_names,
+                            options = list(placeholder="Select column..."))),
       column(6,
-             selectizeInput(
-               "batch_igg_day_column", 
-               "Day Column:", 
-               selected = selected_day %||% NULL, 
-               choices = col_names,
-               options = list(placeholder = "Select column...")
-             )
-      )
+             selectizeInput("batch_igg_day_column","Day Column:",
+                            selected = selected_day %||% NULL,
+                            choices = col_names,
+                            options = list(placeholder="Select column...")))
     )
   })
   
-  # Calculate day 1 values
   batch_igg_data_predicted <- reactiveVal(NULL)
   
   observeEvent(input$batch_igg_submit_button, {
     req(batch_igg_data())
-    
     withProgress(message = 'Calculating IgG Values...', value = 0, {
-    
-    df <- batch_igg_data()
-    fit <- igg_model
-    
-    df_pred <- df %>%
-      rowwise() %>%
-      mutate(pred = list(calculate_day_1_igg(
-        fit = fit,
-        IgG_obs = cur_data()[[input$batch_igg_value_column]],
-        Day_obs = cur_data()[[input$batch_igg_day_column]]
-      ))) %>%
-      unnest_wider(pred) %>%
-      ungroup() %>%
-      mutate(across(
-        c(median, lower_95, upper_95, lower_80, upper_80, lower_50, upper_50),
-        ~ round(.x, 1)
-      )) %>%
-      rename(
-        "Day 1 IgG (g/L)" = median,
-        "Lower 95 CI" = lower_95,
-        "Upper 95 CI" = upper_95,
-        "Lower 80 CI" = lower_80,
-        "Upper 80 CI" = upper_80,
-        "Lower 50 CI" = lower_50,
-        "Upper 50 CI" = upper_50
-      )
-    
-    batch_igg_data_predicted(df_pred)
+      df <- batch_igg_data()
+      fit <- igg_model
+      df_pred <- df %>%
+        rowwise() %>%
+        mutate(pred = list(predict_day1_igg(
+          fit = fit,
+          IgG_obs = as.numeric(cur_data()[[input$batch_igg_value_column]]),
+          Day_obs = as.numeric(cur_data()[[input$batch_igg_day_column]])
+        ))) %>%
+        unnest_wider(pred) %>%
+        ungroup() %>%
+        mutate(across(
+          c(median, lower_95, upper_95, lower_80, upper_80, lower_50, upper_50),
+          ~ round(.x, 1)
+        )) %>%
+        rename(
+          "Day 1 IgG (g/L)" = median,
+          "Lower 95 CI" = lower_95, "Upper 95 CI" = upper_95,
+          "Lower 80 CI" = lower_80, "Upper 80 CI" = upper_80,
+          "Lower 50 CI" = lower_50, "Upper 50 CI" = upper_50
+        )
+      batch_igg_data_predicted(df_pred)
     })
   })
   
-  # Output predcited values as table
   output$batch_igg_result_ui <- renderUI({
     req(batch_igg_data_predicted())
-    
     tagList(
       wellPanel(
         DTOutput("batch_igg_result_table"),
         br(),
         div(
-          downloadButton("batch_igg_result_download", "Download", class = "submit_button"),
+          downloadButton("batch_igg_result_download","Download",class="submit_button"),
           style = "text-align: right;"
         )
       )
@@ -1096,38 +1019,23 @@ function(input, output, session) {
   
   output$batch_igg_result_table <- renderDT({
     req(batch_igg_data_predicted())
-    
-    df <- batch_igg_data_predicted()
-    
     datatable(
-      df,
+      batch_igg_data_predicted(),
       rownames = FALSE,
-      options = list(
-        dom = 'tip',
-        ordering = TRUE,
-        scrollX = TRUE
-      ),
-      selection = "none",
-      escape = FALSE
+      options = list(dom='tip', ordering=TRUE, scrollX=TRUE),
+      selection = "none", escape = FALSE
     ) %>%
-      formatStyle(
-        "Day 1 IgG (g/L)",
-        color = "#4facfe",
-        fontWeight = "bold"
-      )
-    
+      formatStyle("Day 1 IgG (g/L)", color="#4facfe", fontWeight="bold")
   })
   
-  # Download predicted values
   output$batch_igg_result_download <- downloadHandler(
-    filename = function() {
-      paste0("batch_igg_results_", Sys.Date(), ".csv")
-    },
+    filename = function() paste0("batch_igg_results_", Sys.Date(), ".csv"),
     content = function(file) {
       req(batch_igg_data_predicted())
       write.csv(batch_igg_data_predicted(), file, row.names = FALSE)
     }
   )
+  
   
   # STP Tab ---------------------------------------------------------------------
   
@@ -1186,7 +1094,7 @@ function(input, output, session) {
     
     has50 <- all(c("PI50_low","PI50_high") %in% names(preds))
     has95 <- all(c("PI95_low","PI95_high") %in% names(preds))
-    
+
     if (!has95 && all(c("PI_low_95","PI_high_95") %in% names(preds))) {
       preds$PI95_low  <- preds$PI_low_95
       preds$PI95_high <- preds$PI_high_95
@@ -1196,17 +1104,11 @@ function(input, output, session) {
     center <- preds$STP_day1_pred[1]
     
     intervals_df <- dplyr::bind_rows(
-      if (has95) tibble::tibble(
-        Interval = factor("95%", levels = c("95%","50%")),
-        lower = preds$PI95_low[1], upper = preds$PI95_high[1], y = 1
-      ) else NULL,
-      if (has50) tibble::tibble(
-        Interval = factor("50%", levels = c("95%","50%")),
-        lower = preds$PI50_low[1], upper = preds$PI50_high[1], y = 1
-      ) else NULL
+      if (has95) tibble::tibble(Interval = factor("95%", levels = c("95%","50%")),
+                                lower = preds$PI95_low[1], upper = preds$PI95_high[1], y = 1) else NULL,
+      if (has50) tibble::tibble(Interval = factor("50%", levels = c("95%","50%")),
+                                lower = preds$PI50_low[1], upper = preds$PI50_high[1], y = 1) else NULL
     )
-    
-    req(!is.null(intervals_df), nrow(intervals_df) > 0)
     
     x_vals <- c(center,
                 if (has95) c(preds$PI95_low[1], preds$PI95_high[1]),
@@ -1221,14 +1123,12 @@ function(input, output, session) {
     interval_colors <- c("95%" = "#a9d1fe", "50%" = "#2a7bd1")
     
     ggplot(intervals_df) +
-      geom_errorbarh(
-        aes(xmin = lower, xmax = upper, y = y, color = Interval),
-        height = 0, linewidth = 3, lineend = "round"
-      ) +
-      annotate("point", x = center, y = 1, size = 5, shape = 21,
-               fill = "#fe4f4f", color = "black") +
+      geom_errorbarh(aes(xmin = lower, xmax = upper, y = y, color = Interval),
+                     height = 0, size = 3, lineend = "round") +
+      geom_point(aes(x = center, y = 1),
+                 size = 5, shape = 21, fill = "#fe4f4f", color = "black") +
       scale_x_continuous(breaks = brks, limits = xlim, expand = expansion(mult = 0.02)) +
-      scale_color_manual(values = interval_colors, limits = c("95%","50%"), drop = FALSE) +
+      scale_color_manual(values = interval_colors, drop = FALSE) +
       labs(x = "Estimated Day-1 STP", y = NULL, caption = "Prediction Interval") +
       theme_minimal() +
       theme(
@@ -1241,10 +1141,9 @@ function(input, output, session) {
         legend.box = "horizontal",
         legend.title = element_blank(),
         legend.text  = element_text(size = 12),
-        plot.caption = element_text(hjust = 0.5, size = 12, face = "bold", color = "#444444")
+        plot.caption = element_text(hjust = 0.5, size = 12, face = "bold", color = "#444")
       )
   })
-  
   
   # ---- Batch Calculations ------------------------------------------------------
   observeEvent(input$show_example_stp_data, {
@@ -1431,8 +1330,10 @@ function(input, output, session) {
   output$batch_stp_result_table <- renderDT({
     req(batch_stp_data_predicted())
     df <- batch_stp_data_predicted()
-    preferred <- c("Day 1 STP","Lower 95 PI","Upper 95 PI","Lower 50 PI","Upper 50 PI")
-    show_cols <- c(intersect(preferred, names(df)), setdiff(names(df), preferred))
+    
+    preferred <- c("Day 1 STP", "Lower 95 PI", "Upper 95 PI", "Lower 50 PI", "Upper 50 PI")
+    
+    show_cols <- c(setdiff(names(df), preferred), intersect(preferred, names(df)))
     df <- df[, show_cols, drop = FALSE]
     
     datatable(
@@ -1444,6 +1345,7 @@ function(input, output, session) {
     ) %>%
       formatStyle("Day 1 STP", color = "#4facfe", fontWeight = "bold")
   })
+  
   
   # Download predicted values
   output$batch_stp_result_download <- downloadHandler(
