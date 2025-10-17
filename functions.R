@@ -27,23 +27,47 @@ add_totals <- function(vec, general) {
 }
 
 # IgG Model Calculations
-predict_day1_igg <- function(fit, IgG_obs, Day_obs) {
-  b <- fixef(fit)
-  slope <- b["d"]
-  sigma <- sigma(fit)
+`%||%` <- function(x, y) if (is.null(x) || length(x) == 0) y else x
+
+numify <- function(x, eps = 1e-6) {
+  if (is.null(x)) return(NA_real_)
+  x <- as.character(x); x <- trimws(gsub(",", "", x))
+  out <- suppressWarnings(as.numeric(gsub("[^0-9eE\\+\\-\\.]", "", x)))
+  le <- grepl("^<=\\s*[+-]?[0-9]*\\.?[0-9]+$", x)
+  ge <- grepl("^>=\\s*[+-]?[0-9]*\\.?[0-9]+$", x)
+  if (any(le)) out[le] <- as.numeric(sub("^<=\\s*", "", sub("\\s*$", "", x[le]))) - eps
+  if (any(ge)) out[ge] <- as.numeric(sub("^>=\\s*", "", sub("\\s*$", "", x[ge]))) + eps
+  out
+}
+
+predict_day1_igg <- function(pars, IgG_obs, Day_obs, draws = 4000L, include_random = TRUE) {
+  IgG_obs <- numify(IgG_obs); Day_obs <- numify(Day_obs)
+  if (!is.finite(IgG_obs) || IgG_obs <= 0 || !is.finite(Day_obs) || Day_obs < 1)
+    stop("Invalid IgG or Day.")
   
-  igg_day1 <- exp(log(IgG_obs) - slope * (Day_obs - 1))
+  slope_mean <- pars$slope
+  sigma      <- pars$sigma
+  tau11      <- pars$tau11 %||% 0
+  
+  slope_sd <- if (include_random) sqrt(max(0, tau11)) else 0
+  
+  slope_draws <- rnorm(draws, mean = slope_mean, sd = slope_sd)
+  eps_draws   <- rnorm(draws, mean = 0, sd = sigma)
+  
+  log_day1 <- log(IgG_obs) - slope_draws * (Day_obs - 1) + eps_draws
+  igg_day1 <- exp(log_day1)
   
   tibble::tibble(
-    median   = igg_day1,
-    lower_95 = igg_day1 * exp(-1.96 * sigma),
-    upper_95 = igg_day1 * exp( 1.96 * sigma),
-    lower_80 = igg_day1 * exp(-1.28 * sigma),
-    upper_80 = igg_day1 * exp( 1.28 * sigma),
-    lower_50 = igg_day1 * exp(-0.674 * sigma),
-    upper_50 = igg_day1 * exp( 0.674 * sigma)
+    median   = stats::median(igg_day1),
+    lower_95 = stats::quantile(igg_day1, 0.025),
+    upper_95 = stats::quantile(igg_day1, 0.975),
+    lower_80 = stats::quantile(igg_day1, 0.10),
+    upper_80 = stats::quantile(igg_day1, 0.90),
+    lower_50 = stats::quantile(igg_day1, 0.25),
+    upper_50 = stats::quantile(igg_day1, 0.75)
   )
 }
+
 
 # STP model calculations
 back_predict_day1 <- function(model,

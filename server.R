@@ -819,11 +819,7 @@ function(input, output, session) {
                        type = "error", duration = 5)
       
     } else {
-      x <- predict_day1_igg(
-        fit = igg_model,
-        IgG_obs = input$single_igg_value,
-        Day_obs = input$single_igg_day
-      )
+      x <- predict_day1_igg(igg_model, input$single_igg_value, input$single_igg_day)
       single_igg_result(x)
     }
   })
@@ -979,14 +975,11 @@ function(input, output, session) {
     req(batch_igg_data())
     withProgress(message = 'Calculating IgG Values...', value = 0, {
       df <- batch_igg_data()
-      fit <- igg_model
       df_pred <- df %>%
         rowwise() %>%
-        mutate(pred = list(predict_day1_igg(
-          fit = fit,
-          IgG_obs = as.numeric(cur_data()[[input$batch_igg_value_column]]),
-          Day_obs = as.numeric(cur_data()[[input$batch_igg_day_column]])
-        ))) %>%
+        mutate(pred = list(predict_day1_igg(igg_model,
+                                            IgG_obs = cur_data()[[input$batch_igg_value_column]],
+                                            Day_obs = cur_data()[[input$batch_igg_day_column]]))) %>%
         unnest_wider(pred) %>%
         ungroup() %>%
         mutate(across(
