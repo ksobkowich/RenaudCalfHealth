@@ -846,7 +846,7 @@ function(input, output, session) {
         ggplot() +
           annotate("text", x = 0, y = 0,
                    label = "Invalid input or calculation failed",
-                   size = 5, color = "red") +
+                   size = 5, color = "#fe4f4f") +
           theme_void()
       )
     }
@@ -873,7 +873,7 @@ function(input, output, session) {
                      height = 0, size = 3, lineend = "round") +
       geom_point(data = tibble::tibble(x = preds$median, y = 1),
                  aes(x = x, y = y), size = 5, shape = 21,
-                 fill = "#fe4f4f", color = "black") +
+                 fill = "#fe4f4f", color = "#000000") +
       scale_x_continuous(breaks = brks, limits = xlim, expand = expansion(mult = 0.02)) +
       scale_color_manual(values = c("95%" = "#a9d1fe",
                                     "80%" = "#4facfe",
@@ -1119,7 +1119,7 @@ function(input, output, session) {
       geom_errorbarh(aes(xmin = lower, xmax = upper, y = y, color = Interval),
                      height = 0, size = 3, lineend = "round") +
       geom_point(aes(x = center, y = 1),
-                 size = 5, shape = 21, fill = "#fe4f4f", color = "black") +
+                 size = 5, shape = 21, fill = "#fe4f4f", color = "#000000") +
       scale_x_continuous(breaks = brks, limits = xlim, expand = expansion(mult = 0.02)) +
       scale_color_manual(values = interval_colors, drop = FALSE) +
       labs(x = "Estimated Day-1 STP", y = NULL, caption = "Prediction Interval") +
@@ -1134,7 +1134,7 @@ function(input, output, session) {
         legend.box = "horizontal",
         legend.title = element_blank(),
         legend.text  = element_text(size = 12),
-        plot.caption = element_text(hjust = 0.5, size = 12, face = "bold", color = "#444")
+        plot.caption = element_text(hjust = 0.5, size = 12, face = "bold", color = "#444444")
       )
   })
   
