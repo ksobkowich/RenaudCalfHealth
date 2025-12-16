@@ -16,23 +16,31 @@ function(input, output, session) {
   observe({
     current_general <- general()
     current_general["num_calvings"] <- input$num_calvings
-    current_general["perc_hefers"] <- input$perc_hefers
+    current_general["perc_hefers"]  <- input$perc_hefers
     general(current_general)
     
+    # --- Diarrhea: total -> split -------------------------------------------
+    short_diar_share <- 0.4357                        #36.89 / (36.89 + 47.75)
+    diar_total_prev  <- input$perc_diar_total
+    
     current_short_diar <- short_diar()
-    current_short_diar["perc_prev"] <- input$perc_short_diar
+    current_short_diar["perc_prev"] <- diar_total_prev * short_diar_share
     short_diar(current_short_diar)
     
     current_long_diar <- long_diar()
-    current_long_diar["perc_prev"] <- input$perc_long_diar
+    current_long_diar["perc_prev"]  <- diar_total_prev * (1 - short_diar_share)
     long_diar(current_long_diar)
     
+    # --- Pneumonia: total -> split ------------------------------------------
+    short_pna_share <- 0.488                          #22 / (22 + 23)   
+    pna_total_prev  <- input$perc_pna_total
+    
     current_short_pna <- short_pna()
-    current_short_pna["perc_prev"] <- input$perc_short_pna
+    current_short_pna["perc_prev"] <- pna_total_prev * short_pna_share
     short_pna(current_short_pna)
     
     current_long_pna <- long_pna()
-    current_long_pna["perc_prev"] <- input$perc_long_pna
+    current_long_pna["perc_prev"]  <- pna_total_prev * (1 - short_pna_share)
     long_pna(current_long_pna)
   })
   
@@ -533,13 +541,13 @@ function(input, output, session) {
     simple_pna_table$Long <- round(simple_pna_table$Long, 2)
     
     simple_pna_table[, 1] <- ifelse(
-      seq_len(nrow(simple_pna_table)) == 8,
+      seq_len(nrow(simple_pna_table)) == 7,
       simple_pna_table[, 1],
       scales::dollar(as.numeric(simple_pna_table[, 1]))
     )
     
     simple_pna_table[, 3] <- ifelse(
-      seq_len(nrow(simple_pna_table)) == 8,
+      seq_len(nrow(simple_pna_table)) == 7,
       simple_pna_table[, 3],
       scales::dollar(as.numeric(simple_pna_table[, 3]))
     )
@@ -652,7 +660,7 @@ function(input, output, session) {
     )
     
     detailed_pna_table[, 3] <- ifelse(
-      seq_len(nrow(detailed_pna_table)) %in% c(3,7,8,12,13,17,21,242),
+      seq_len(nrow(detailed_pna_table)) %in% c(3,7,8,12,13,17,21,24),
       detailed_pna_table[, 3],
       scales::dollar(as.numeric(detailed_pna_table[, 3]), accuracy = 0.01)
     )

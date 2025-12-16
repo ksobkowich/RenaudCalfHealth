@@ -52,8 +52,7 @@ dashboardPage(
                   
                   hr(),
                   h4("Diarrhea Prevalence", style = "font-weight: bold;"),
-                  sliderInput("perc_short_diar", "% w/ short diarrhea", min = 0, max = 100, step = 1, value = short_diar[["perc_prev"]]),
-                  sliderInput("perc_long_diar", "% w/ long diarrhea", min = 0, max = 100, step = 1, value = long_diar[["perc_prev"]]),
+                  sliderInput("perc_diar_total", "% w/ diarrhea", min = 0, max = 100, step = 1, value = diar[["perc_prev"]]),
                   
                   hr(),
                   actionBttn("additional_controls_diar", "Additional Controls", style = "pill", size = "s", color = "danger")
@@ -128,8 +127,7 @@ dashboardPage(
                   
                   hr(),
                   h4("Pneumonia Prevalence", style = "font-weight: bold;"),
-                  sliderInput("perc_short_pna", "% w/ short pneumonia", min = 0, max = 100, step = 1, value = short_pna[["perc_prev"]]),
-                  sliderInput("perc_long_pna", "% w/ long pneumonia", min = 0, max = 100, step = 1, value = long_pna[["perc_prev"]]),
+                  sliderInput("perc_pna_total", "% w/ pneumonia", min = 0, max = 100, step = 1, value = pna[["perc_prev"]]),
                   
                   hr(),
                   actionBttn("additional_controls_pna", "Additional Controls", style = "pill", size = "s", color = "danger")

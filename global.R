@@ -40,11 +40,13 @@ general <- setNames(general_values$value, general_values$short_name)
 
 ## Diarrhea ---------------------------------------------------------------
 diarrhea_values <- diarrhea_values %>% filter(!is.na(short_name))
+diar <- setNames(diarrhea_values$value, diarrhea_values$short_name)
 short_diar <- setNames(diarrhea_values$short_value, diarrhea_values$short_name)
 long_diar <- setNames(diarrhea_values$long_value, diarrhea_values$short_name)
 
 ## Pneumonia --------------------------------------------------------------
 pna_values <- pna_values %>% filter(!is.na(short_name))
+pna <- setNames(pna_values$value, pna_values$short_name)
 short_pna <- setNames(pna_values$short_value, pna_values$short_name)
 long_pna <- setNames(pna_values$long_value, pna_values$short_name)
 
