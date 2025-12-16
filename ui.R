@@ -33,9 +33,171 @@ dashboardPage(
     tabItems(
       
       # Home Tab ----------------------------------------------------------------
-      tabItem(tabName = "home",
-              h2("Welcome to the Calf Health Toolkit"),
-              p("Select a health topic from the sidebar.")
+      tabItem(
+        tabName = "home",
+        
+        # --- HERO HEADER --------------------------------------------------------
+        fluidRow(
+          column(
+            width = 12,
+            div(
+              style = "
+          position: relative;
+          height: 300px;
+          border-radius: 12px;
+          overflow: hidden;
+          margin-bottom: 30px;
+        ",
+              
+              # Background image
+              tags$img(
+                src = "https://dairyatguelph.ca/wp-content/uploads/2024/03/iStock-483289058.jpg",
+                style = "
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          ",
+                alt = "Calf on a farm"
+              ),
+              
+              # Dark overlay for text readability
+              div(
+                style = "
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+              rgba(0,0,0,0.55),
+              rgba(0,0,0,0.35)
+            );
+          "
+              ),
+              
+              # Text overlay
+              div(
+                style = "
+            position: absolute;
+            bottom: 30px;
+            left: 40px;
+            color: white;
+          ",
+                h1(
+                  "Calf Health Toolkit",
+                  style = "
+              font-weight: 600;
+              margin-bottom: 8px;
+            "
+                ),
+                h4(
+                  "Decision-support tools for calf health, productivity, and economic impact",
+                  style = "
+              font-weight: 400;
+              max-width: 700px;
+            "
+                )
+              )
+            )
+          )
+        ),
+        
+        # --- MAIN CONTENT -------------------------------------------------------
+        fluidRow(
+          column(
+            width = 9, offset = 1,
+            p(
+              "This toolkit provides interactive calculators and prediction tools to help quantify the health and prodcution loss impacts of common calf diseases, and support evidence-based decision-making.",
+              style = "font-size: 16px; line-height: 1.6;"
+            ),
+            p(
+              "Use the sidebar to explore individual health topics, and view detailed breakdowns.",
+              style = "font-size: 16px; line-height: 1.6;"
+            ),
+            br(),
+            tags$ul(
+              tags$li("Production loss estimates of diarrhea and pneumonia"),
+              tags$li("Customizable herd and management assumptions"),
+              tags$li("IgG and STP prediction tools"),
+              tags$li("Downloadable tables and results")
+            )
+          )
+        ),
+        
+        br(),
+        
+        # --- GETTING STARTED ----------------------------------------------------
+        fluidRow(
+          column(
+            width = 12,
+            div(
+              style = "
+          background-color: #f7f7f7;
+          padding: 25px;
+          border-radius: 10px;
+        ",
+              h4("Features"),
+              fluidRow(
+                column(
+                  4,
+                  icon("chart-line", class = "text-primary"),
+                  strong(" Disease Impact"),
+                  p("Explore cost and productivity impacts of diarrhea and pneumonia.")
+                ),
+                column(
+                  4,
+                  icon("calculator", class = "text-primary"),
+                  strong(" Predictive Tools"),
+                  p("Estimate IgG and STP values using validated models.")
+                ),
+                column(
+                  4,
+                  icon("sliders-h", class = "text-primary"),
+                  strong(" Customize Assumptions"),
+                  p("Adjust herd-level values such as size, costs, and treatment parameters to tailor estimater.")
+                )
+              )
+            )
+          )
+        ),
+        br(), br(),
+        
+        fluidRow(
+          column(
+            width = 12,
+            div(
+              style = "
+        border-top: 1px solid #e5e5e5;
+        padding-top: 20px;
+        margin-top: 30px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      ",
+              
+              tags$img(
+                src = "https://s3-eu-west-1.amazonaws.com/assets.in-part.com/1Qi2UyvATA2qYzxmJveI_Stacked_FullColour_WhiteBG.png",
+                alt = "University of Guelph logo",
+                style = "
+          height: 45px;
+          opacity: 0.9;
+        "
+              ),
+              
+              # Attribution text
+              div(
+                p(
+                  "This toolkit was developed based on the collective work, expertise, and research contributions of numerous members of the Renaud Lab at the University of Guelph.",
+                  style = "
+            margin: 0;
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+          "
+                )
+              )
+            )
+          )
+        )
       ),
       
       # Diarrhea Tab ------------------------------------------------------------
@@ -258,13 +420,13 @@ dashboardPage(
                          ),
                          fluidRow(
                            column(10, offset = 1,
-                             radioButtons(
-                               inputId  = "single_stp_group",
-                               label    = "Colostrum group",
-                               choices  = c("Maternal" = "1", "Replacer" = "2", "Mixed" = "3"),
-                               selected = character(0),
-                               inline   = TRUE
-                             )
+                                  radioButtons(
+                                    inputId  = "single_stp_group",
+                                    label    = "Colostrum group",
+                                    choices  = c("Maternal" = "1", "Replacer" = "2", "Mixed" = "3"),
+                                    selected = character(0),
+                                    inline   = TRUE
+                                  )
                            )
                          ),
                          div(
