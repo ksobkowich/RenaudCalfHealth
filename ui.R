@@ -83,7 +83,7 @@ dashboardPage(
             color: white;
           ",
                 h1(
-                  "Calf Health Toolkit",
+                  "Dairy Health Toolkit",
                   style = "
               font-weight: 600;
               margin-bottom: 8px;
