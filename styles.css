@@ -65,8 +65,52 @@ h6{
 }
 
 .skin-black-light .main-header .navbar>.sidebar-toggle {
-    color: #333;
+    color: #FFC429;
     border-right: 0;
+}
+
+.skin-black-light .main-sidebar {
+  background-color: #555555;
+}
+
+/* Inactive (default) sidebar text + icons */
+.skin-black-light .sidebar-menu > li > a,
+.skin-black-light .sidebar-menu > li > a > i {
+  color: #ffffff;
+}
+
+/* Active (selected) sidebar item */
+.skin-black-light .sidebar-menu > li.active > a,
+.skin-black-light .sidebar-menu > li.active > a > i {
+  color: #ffc429;
+}
+
+/* Optional: active background + left indicator */
+.skin-black-light .sidebar-menu > li.active > a {
+  background-color: #1f1f1f;
+  border-left-color: #ffc429;
+}
+
+/* Slider filled bar */
+.irs--shiny .irs-bar {
+  background: #ffc429;
+  border-color: #ffc429;
+}
+
+/* Slider handle */
+.irs--shiny .irs-handle {
+  border-color: #ffc429;
+}
+
+/* Value bubble */
+.irs--shiny .irs-single {
+  background: #ffc429;
+  color: #000;
+}
+
+/* Arrow under value bubble */
+.irs--shiny .irs-single:before {
+  border-top-color: #ffc429;
 }
 
 .content-wrapper {
@@ -100,7 +144,7 @@ h6{
   width: 140px;
   height: 140px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #4facfe, #00f2fe);
+  background: linear-gradient(135deg, #E51937, #FFC429);
   padding: 4px; /* thickness of the ring */
   margin: 0 auto 10px auto;
 }
@@ -113,7 +157,7 @@ h6{
   height: 100%;
   border-radius: 50%;
   background-color: white; /* or transparent */
-  color: #4facfe;
+  color: #E51937;
   font-size: 1.5em;
   font-weight: bold;
 }
@@ -124,12 +168,12 @@ table.dataTable {
 
 .submit_button{
   color: white;
-  background-color: #4facfe;
+  background-color: #E51937;
   border: none;
   border-radius: 10px;
   padding: 5px 20px;
 }
 
 .progress-bar{
-  background-color: #4facfe;
+  background-color: #E51937;
 }

@@ -5,7 +5,7 @@ dashboardPage(
   dashboardHeader(
     title = tags$div(
       h2("Dairy Health Toolkit",
-         style = "font-weight:900; color: #4facfe; margin: 0; text-align: center;"
+         style = "font-weight:900; color: #E51937; margin: 0; text-align: center;"
       ),
       style = "width: 100%;"
     ),
@@ -56,7 +56,7 @@ dashboardPage(
                   sliderInput("perc_long_diar", "% w/ long diarrhea", min = 0, max = 100, step = 1, value = long_diar[["perc_prev"]]),
                   
                   hr(),
-                  actionBttn("additional_controls_diar", "Additional Controls", style = "pill", size = "s", color = "default")
+                  actionBttn("additional_controls_diar", "Additional Controls", style = "pill", size = "s", color = "danger")
                 ),
                 
                 mainPanel(
@@ -132,7 +132,7 @@ dashboardPage(
                   sliderInput("perc_long_pna", "% w/ long pneumonia", min = 0, max = 100, step = 1, value = long_pna[["perc_prev"]]),
                   
                   hr(),
-                  actionBttn("additional_controls_pna", "Additional Controls", style = "pill", size = "s", color = "default")
+                  actionBttn("additional_controls_pna", "Additional Controls", style = "pill", size = "s", color = "danger")
                 ),
                 
                 mainPanel(
