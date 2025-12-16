@@ -1,17 +1,76 @@
 function(input, output, session) {
   
-  # Initiate Reactive Values ------------------------------------------------
-  general <- reactiveVal(general)
+  # Start from global values as a fallback
+  general_values_rv  <- reactiveVal(general_values)
+  diarrhea_values_rv <- reactiveVal(diarrhea_values)
+  pna_values_rv      <- reactiveVal(pna_values)
   
+  # On session start, try to fetch newest values once
+  observeEvent(TRUE, {
+    general_values_rv(  read_with_fallback(sheet_id, "General",   "data/general_values.rds") )
+    diarrhea_values_rv( read_with_fallback(sheet_id, "Diarrhea",  "data/diarrhea_values.rds") )
+    pna_values_rv(      read_with_fallback(sheet_id, "Pneumonia", "data/pna_values.rds") )
+  }, once = TRUE)
+  
+  # Convert sheet dataframes -> named vectors (same structure as your globals)
+  general_live <- reactive({
+    gv <- general_values_rv()
+    setNames(gv$value, gv$short_name)
+  })
+  
+  short_diar_ref <- reactive({
+    dv <- diarrhea_values_rv() %>% dplyr::filter(!is.na(short_name))
+    setNames(dv$short_value, dv$short_name)
+  })
+  long_diar_ref <- reactive({
+    dv <- diarrhea_values_rv() %>% dplyr::filter(!is.na(short_name))
+    setNames(dv$long_value, dv$short_name)
+  })
+  
+  short_pna_ref <- reactive({
+    pv <- pna_values_rv() %>% dplyr::filter(!is.na(short_name))
+    setNames(pv$short_value, pv$short_name)
+  })
+  long_pna_ref <- reactive({
+    pv <- pna_values_rv() %>% dplyr::filter(!is.na(short_name))
+    setNames(pv$long_value, pv$short_name)
+  })
+  
+  # ------------------------------------------------------------------------
+  # Initiate Reactive Values (your existing pattern)
+  # ------------------------------------------------------------------------
+  
+  general    <- reactiveVal(general)
   short_diar <- reactiveVal(short_diar)
-  long_diar <- reactiveVal(long_diar)
-  simple_diar_table <- reactiveVal(NULL)
+  long_diar  <- reactiveVal(long_diar)
+  simple_diar_table   <- reactiveVal(NULL)
   detailed_diar_table <- reactiveVal(NULL)
   
   short_pna <- reactiveVal(short_pna)
-  long_pna <- reactiveVal(long_pna)
-  simple_pna_table <- reactiveVal(NULL)
+  long_pna  <- reactiveVal(long_pna)
+  simple_pna_table   <- reactiveVal(NULL)
   detailed_pna_table <- reactiveVal(NULL)
+  
+  # Apply the fetched sheet values ONCE at session start (seed the state)
+  observeEvent(general_live(), {
+    general(general_live())
+  }, once = TRUE)
+  
+  observeEvent(short_diar_ref(), {
+    short_diar(short_diar_ref())
+  }, once = TRUE)
+  
+  observeEvent(long_diar_ref(), {
+    long_diar(long_diar_ref())
+  }, once = TRUE)
+  
+  observeEvent(short_pna_ref(), {
+    short_pna(short_pna_ref())
+  }, once = TRUE)
+  
+  observeEvent(long_pna_ref(), {
+    long_pna(long_pna_ref())
+  }, once = TRUE)
   
   observe({
     current_general <- general()
