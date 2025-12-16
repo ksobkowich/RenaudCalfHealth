@@ -1,5 +1,7 @@
 function(input, output, session) {
   
+# Auto-refresh data -------------
+  
   # Start from global values as a fallback
   general_values_rv  <- reactiveVal(general_values)
   diarrhea_values_rv <- reactiveVal(diarrhea_values)
@@ -36,10 +38,6 @@ function(input, output, session) {
     setNames(pv$long_value, pv$short_name)
   })
   
-  # ------------------------------------------------------------------------
-  # Initiate Reactive Values (your existing pattern)
-  # ------------------------------------------------------------------------
-  
   general    <- reactiveVal(general)
   short_diar <- reactiveVal(short_diar)
   long_diar  <- reactiveVal(long_diar)
@@ -71,6 +69,8 @@ function(input, output, session) {
   observeEvent(long_pna_ref(), {
     long_pna(long_pna_ref())
   }, once = TRUE)
+  
+# End auto-refresh ---------------
   
   observe({
     current_general <- general()
